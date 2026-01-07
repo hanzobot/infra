@@ -13,6 +13,18 @@ File patterns:
   - architecture.md
   - ops.md
   - discord.md
+  - whatsapp.md (if relevant)
+
+Example layout:
+```
+~/clawd/
+├── memory/
+│ ├── project.md
+│ ├── architecture.md
+│ ├── discord.md
+│ ├── whatsapp.md
+│ └── 2026-01-06_CLAWDINATOR-1.md
+```
 
 AGENTS.md should reference key memory files explicitly (e.g., “For Discord context, also read memory/discord.md”).
 

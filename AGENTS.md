@@ -16,11 +16,12 @@ Memory references:
 Repo rule: no inline scripting languages (Python/Node/etc.) in Nix or shell blocks; put logic in script files and call them.
 
 Deploy flow (automation-first):
-- Provision host with OpenTofu (`infra/opentofu`).
-- Add host SSH key to agenix recipients and rekey secrets.
+- Provision host with OpenTofu (`infra/opentofu`; set `HCLOUD_TOKEN`, no tfvars with secrets).
+- Grab the host SSH key and add it to `../nix/nix-secrets/secrets.nix`; rekey secrets with agenix.
+- Ensure required secrets exist: `clawdinator-github-app.pem`, `clawdinator-discord-token`, `anthropic-api-key`.
+- Update `nix/hosts/<host>.nix` (Discord allowlist, GitHub App installationId, identity name).
 - Run `nixos-anywhere` with the flake host (ex: `.#clawdinator-1`).
-- Set GitHub App `installationId` in host config (required).
-- Configure Discord guild/channel allowlist in `services.clawdinator.config.discord`.
+- Ensure `/var/lib/clawd/repo` contains this repo (self-update requires it).
 - Verify systemd services: `clawdinator`, `clawdinator-github-app-token`, `clawdinator-self-update`.
 - Commit and push changes; repo is the source of truth.
 

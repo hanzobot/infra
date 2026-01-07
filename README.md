@@ -1,55 +1,25 @@
-idea of this repo is to create infrastructure to spawn CLAWDINATORS on demand.
+# CLAWDINATORS
 
-this repo is declarative-first. humans are not in the loop.
-the end goal: another CLAWDINATOR can spin up a fresh CLAWDINATOR with a single command.
+CLAWDINATORS are maintainer‑grade coding agents. This repo defines how to spawn them
+declaratively (OpenTofu + NixOS). Humans are not in the loop.
 
-usecase: a CLAWDINATOR (coding agent with messaging capabilities)
+Principles:
+- Declarative‑first. A CLAWDINATOR can bootstrap another CLAWDINATOR with a single command.
+- No manual host edits. The repo + agenix secrets are the source of truth.
+- Latest upstream nix‑clawdbot by default; breaking changes are acceptable.
 
-- on demand clawdbots are called CLAWDINATOR-{1..n}. 
-- CLAWDINATORS must run on a server in hetzner
-- infra stack: nix + opentofu
-- first we must create 1 POC CLAWDINATOR with working infra. 
-- then we create more. 
-- CLAWDINATORS must be created declaratively. no interactive setup.
-- CLAWDINATORS will connect to our discord server, to start with in #clawdributors-test channel.
-- CLAWDINATORS are called CLAWDINATOR-{1..n}. 
-- CLAWDINATORS are br00tal. they have a br00tal soul document. its in CLAWDINATOR-SOUL.md. 
-- CLAWDINATORS can write and run code for the maintainers.
-- CLAWDINATORS can interact with github.
-- CLAWDINATORS should use these instructions to get set up with discord. https://github.com/clawdbot/clawdbot/blob/main/docs/discord.md
-- CLAWDINATORS should use local Nix examples in sibling repos (ai-stack, nixos-config, gohome) and nix-clawdbot
-- CLAWDINATORS should only respond to maintainers. 
-- CLAWDINATORS can self-modify themselves.
-- CLAWDINATORS can self-deploy themselves after self-modification.
-- CLAWDINATORS post a lot of arnie gifs.
-- CLAWDINATORS are ephemeral, but have shared memory.
-- CLAWDINATORS should store their shared memory in somewhere sensible based on their deployment lifecycle.
-- CLAWDINATORS share all memory between instances (hive mind). No per-instance prefix for shared memory.
-- For POC, a shared host volume is fine for 1–5 hosts. Use per-instance daily notes like YYYY-MM-DD_INSTANCE.md, but keep key project/architecture memory in single shared files.
-- CLAWDINATORS need tokens for GitHub (readonly for now, required).
-- GitHub App tokens are short-lived; refresh via a timer if using a GitHub App.
-- CLAWDINATORS need an Anthropic API key for Claude models.
-- Discord bot tokens should be stored as explicit files via agenix.
-- CLAWDINATORS primary tasks are to monitor GitHub issues and GitHub pull requests. 
-- CLAWDINATORS can also write code using Codex, in later clawdinator iterations.
-- CLAWDINATORS must understand project philosophy, project goals, architecture, and have deep repo knowledge.
-- CLAWDINATORS act like maintainers in coding-agent form, with SOTA intelligence.
-- CLAWDINATORS use Claude for personality and Codex for coding.
+Stack:
+- Hetzner hosts provisioned with OpenTofu.
+- NixOS modules configure Clawdbot and CLAWDINATOR runtime.
+- Shared hive‑mind memory stored on a mounted host volume.
 
-notes on memory for clawdinators:
+Shared memory (hive mind):
+- All instances share the same memory files (no per‑instance prefixes for canonical files).
+- Daily notes can be per‑instance: `YYYY-MM-DD_INSTANCE.md`.
+- Canonical files are single shared sources of truth.
 
-During Sessions:
-Write important things to memory/YYYY-MM-DD.md
-Update memory/project.md and memory/architecture.md for durable facts
-Update AGENTS.md with lessons learned
-Key principle: "Mental notes" don't survive restarts — write it to a file.
-Templates live in the clawdbot repo and are synced by automation.
-🦐
-AGENTS.md has some specific stuff (like how to handle #help, #freshbits channel monitoring, lessons learned from getting roasted for wrong answers 😅), but the structure is the same default templates.
-The fancy part is discipline: actually write things down insotead of hoping to remember them next session.
-
-example memory layout:
-
+Example layout:
+```
 ~/clawd/
 ├── memory/
 │ ├── project.md # Project goals + non-negotiables
@@ -57,24 +27,39 @@ example memory layout:
 │ ├── discord.md # Discord-specific stuff
 │ ├── whatsapp.md # WhatsApp-specific stuff
 │ └── 2026-01-06.md # Daily notes
+```
 
-AGENTS.md should reference specific memory files, e.g. "For Discord context, also read memory/discord.md"
+Secrets (required):
+- GitHub App private key (for short‑lived installation tokens).
+- Discord bot token (per instance).
+- Anthropic API key (Claude models).
+- Hetzner API token (OpenTofu).
 
-docs:
-- docs/PHILOSOPHY.md
-- docs/ARCHITECTURE.md
-- docs/SHARED_MEMORY.md
-- docs/POC.md
-- docs/SECRETS.md
-- docs/SKILLS_AUDIT.md
+Secrets are stored in `../nix/nix-secrets` using agenix and decrypted to `/run/agenix/*`
+on hosts. See `docs/SECRETS.md`.
 
-nix:
-- flake.nix exposes nixosModules.clawdinator (latest upstream nix-clawdbot)
-- nix/modules/clawdinator.nix
-- nix/examples/clawdinator-host.nix
-- nix/examples/flake.nix
-- nix/hosts/clawdinator-1.nix
+Deploy (automation‑first):
+- `infra/opentofu` provisions Hetzner hosts.
+- Host config lives in `nix/hosts/*` and is exposed in `flake.nix`.
+- Install with `nixos-anywhere` and point it at the flake host.
+- Ensure `/var/lib/clawd/repo` contains this repo (needed for self‑update).
+- Configure Discord guild/channel allowlist and GitHub App installation ID.
 
-operating mode:
-- no manual setup. these machines are created by automation (CLAWDINATORS).
-- everything is in repo + agenix. no ad-hoc changes on hosts.
+Docs:
+- `docs/PHILOSOPHY.md`
+- `docs/ARCHITECTURE.md`
+- `docs/SHARED_MEMORY.md`
+- `docs/POC.md`
+- `docs/SECRETS.md`
+- `docs/SKILLS_AUDIT.md`
+
+Repo layout:
+- `infra/opentofu` — Hetzner provisioning
+- `nix/modules/clawdinator.nix` — NixOS module
+- `nix/hosts/` — host configs
+- `nix/examples/` — example host + flake wiring
+- `memory/` — template memory files
+
+Operating mode:
+- No manual setup. Machines are created by automation (other CLAWDINATORS).
+- Everything is in repo + agenix. No ad‑hoc changes on hosts.

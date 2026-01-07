@@ -6,7 +6,7 @@ Acceptance criteria:
 - CLAWDINATOR-1 connects to Discord #clawdributors-test.
 - GitHub integration is read-only.
 - Shared memory directory mounted and writable.
- - Discord allowlist configured (guild + channels).
+- Discord allowlist configured (guild + channels).
 
 Secrets needed (initially):
 - Discord bot token (per instance).

@@ -47,5 +47,6 @@ resource "hcloud_volume_attachment" "clawd" {
 
   volume_id = hcloud_volume.clawd[each.value].id
   server_id = hcloud_server.clawdinator[each.value].id
-  automount = true
+  # NixOS handles formatting/mounting; keep Hetzner automount off.
+  automount = false
 }

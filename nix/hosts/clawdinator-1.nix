@@ -36,16 +36,20 @@
         };
       };
     };
+    disk.clawd = {
+      type = "disk";
+      device = "/dev/disk/by-id/scsi-0HC_Volume_${config.networking.hostName}";
+      content = {
+        type = "filesystem";
+        format = "ext4";
+        mountpoint = "/var/lib/clawd";
+        mountOptions = [ "nofail" "x-systemd.device-timeout=10" ];
+      };
+    };
   };
 
   services.openssh.enable = true;
   networking.firewall.allowedTCPPorts = [ 22 18789 ];
-
-  fileSystems."/var/lib/clawd" = {
-    device = "/dev/disk/by-label/CLAWD";
-    fsType = "ext4";
-    options = [ "nofail" "x-systemd.device-timeout=10" ];
-  };
 
   age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
   age.secrets."clawdinator-github-app.pem".file =
@@ -58,6 +62,7 @@
   services.clawdinator = {
     enable = true;
     instanceName = "CLAWDINATOR-1";
+    memoryDir = "/var/lib/clawd/memory";
 
     config = {
       gateway.mode = "server";

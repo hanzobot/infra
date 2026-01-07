@@ -13,8 +13,14 @@ Core pieces:
 
 Runtime layout (planned):
 - /var/lib/clawd/memory (shared hive-mind memory)
-- /var/lib/clawd/runtime (instance-local temp)
-- /var/lib/clawd/logs (logs)
+- /var/lib/clawd/workspace (agent workspace)
+- /var/lib/clawd/logs (gateway logs)
+- /var/lib/clawd/repo (this repo for self-update)
+
+Storage:
+- POC uses one Hetzner volume per host, mounted at /var/lib/clawd.
+- Volume device path follows the host name (e.g. /dev/disk/by-id/scsi-0HC_Volume_clawdinator-1).
+- In multi-host mode, add a shared filesystem or object-sync layer and keep canonical memory files authoritative.
 
 Instance naming:
 - CLAWDINATOR-{1..n}

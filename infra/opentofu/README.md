@@ -27,4 +27,5 @@ Example vars file:
 
 Notes:
 - POC uses one volume per host for /var/lib/clawd.
+- Volumes are attached without automount; NixOS formats/mounts them.
 - A single Hetzner volume cannot be attached to multiple hosts. For multi-host hive-mind memory, add a shared FS (NFS/Ceph) or object-sync layer later.

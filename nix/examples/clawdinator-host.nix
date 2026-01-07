@@ -13,6 +13,7 @@
   services.clawdinator = {
     enable = true;
     instanceName = "CLAWDINATOR-1";
+    memoryDir = "/var/lib/clawd/memory";
 
     # Raw Clawdbot config JSON (schema is upstream). Extend as needed.
     config = {
