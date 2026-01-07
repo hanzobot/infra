@@ -1,5 +1,5 @@
 output "bucket_name" {
-  value = aws_s3_bucket.image_bucket.bucket
+  value = data.aws_s3_bucket.image_bucket.bucket
 }
 
 output "aws_region" {

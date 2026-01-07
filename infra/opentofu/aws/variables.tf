@@ -4,15 +4,9 @@ variable "aws_region" {
 }
 
 variable "bucket_name" {
-  description = "Base name for the image bucket."
+  description = "Existing S3 bucket name for image uploads."
   type        = string
-  default     = "clawdinator-images"
-}
-
-variable "bucket_suffix" {
-  description = "Optional suffix to avoid naming collisions. If empty, a random suffix is used."
-  type        = string
-  default     = ""
+  default     = "clawdinator-images-eu1-20260107165216"
 }
 
 variable "tags" {

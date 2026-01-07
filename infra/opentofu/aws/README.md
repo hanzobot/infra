@@ -1,9 +1,9 @@
 # OpenTofu (AWS S3 Image Bucket)
 
-Goal: create a private S3 bucket for CLAWDINATOR images, a scoped IAM user for CI, and the VM Import role.
+Goal: reuse the existing S3 bucket for CLAWDINATOR images, plus create a scoped IAM user for CI and the VM Import role.
 
 Prereqs:
-- AWS credentials with permissions to create S3 + IAM (use your homelab-admin key locally).
+- AWS credentials with permissions to manage IAM (use your homelab-admin key locally).
 
 Usage:
 - export AWS_ACCESS_KEY_ID=...
@@ -13,7 +13,7 @@ Usage:
 - tofu apply
 
 Outputs:
-- `bucket_name`
+- `bucket_name` (existing)
 - `aws_region`
 - `access_key_id`
 - `secret_access_key`
