@@ -11,7 +11,14 @@ fi
 
 nix run github:nix-community/nixos-generators -- -f "${format}" -c "${config_path}" -o "${out_dir}"
 
-image_file="$(find "${out_dir}" -maxdepth 2 -type f \( -name "*.img" -o -name "*.vhd" -o -name "*.raw" -o -name "*.vmdk" \) | head -n 1)"
+out_real="${out_dir}"
+if [ -L "${out_dir}" ]; then
+  out_real="$(readlink -f "${out_dir}")"
+  rm -f "${out_dir}"
+  mkdir -p "${out_dir}"
+fi
+
+image_file="$(find "${out_real}" -maxdepth 2 -type f \( -name "*.img" -o -name "*.vhd" -o -name "*.raw" -o -name "*.vmdk" \) | head -n 1)"
 if [ -z "${image_file}" ]; then
   echo "No image found in ${out_dir} for format ${format}" >&2
   exit 1
