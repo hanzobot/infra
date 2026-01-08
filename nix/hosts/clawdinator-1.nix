@@ -43,7 +43,7 @@
     memoryDir = "/var/lib/clawd/memory";
 
     config = {
-      gateway.mode = "server";
+      gateway.mode = "local";
       agent.workspace = "/var/lib/clawd/workspace";
       agent.maxConcurrent = 4;
       routing.queue = {
