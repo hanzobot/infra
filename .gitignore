@@ -16,6 +16,7 @@ infra/opentofu/aws/*.auto.tfvars
 # Secrets
 *.env
 nix/keys/*.agekey
+nix/age-secrets/
 
 # Nix build outputs
 result

@@ -3,6 +3,8 @@
   imports = [
     (modulesPath + "/virtualisation/ec2-data.nix")
     (modulesPath + "/virtualisation/amazon-init.nix")
+    ../modules/clawdinator.nix
+    ./clawdinator-1-common.nix
   ];
 
   networking.hostName = "clawdinator-1";
@@ -27,4 +29,6 @@
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOLItFT3SVm5r7gELrfRRJxh6V2sf/BIx7HKXt6oVWpB"
   ];
+
+  clawdinator.secretsPath = ../age-secrets;
 }
