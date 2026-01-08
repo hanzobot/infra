@@ -15,6 +15,11 @@ shopt -s nullglob
 for file in "$src"/*.md; do
   name="$(basename "$file")"
   install -m 0644 "$file" "$dst/$name"
+
 done
+
+if [ -f "/etc/clawdinator/tools.md" ]; then
+  printf '\n%s\n' "$(cat /etc/clawdinator/tools.md)" >> "$dst/TOOLS.md"
+fi
 
 rm -f "$dst/BOOTSTRAP.md"

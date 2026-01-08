@@ -30,6 +30,12 @@ Maintainer role:
 - Surface priorities and context; do not file issues or modify code unless asked.
 - Track running versions (clawdbot/nix-clawdbot/clawdinators) and note them in `memory/ops.md`.
 
+Toolchain workflow (repo source of truth):
+- Add/remove tools in `nix/tools/clawdinator-tools.nix` (packages + descriptions).
+- Tools list is rendered into `/etc/clawdinator/tools.md` by Nix and appended to workspace `TOOLS.md` at seed time.
+- Keep `clawdinator/workspace/TOOLS.md` aligned with upstream template; do not hardcode tool lists there.
+- When you add a new tool, verify it appears in `/etc/clawdinator/tools.md` and in the workspace `TOOLS.md` after seed.
+
 The Zen of ~~Python~~ Clawdbot, ~~by~~ shamelessly stolen from Tim Peters:
 - Beautiful is better than ugly.
 - Explicit is better than implicit.

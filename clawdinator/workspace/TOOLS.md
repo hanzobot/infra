@@ -40,21 +40,4 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 Add whatever helps you do your job. This is your cheat sheet.
 
-## CLAWDINATOR Tooling Audit
-
-Quick checks:
-- Binaries: `ls /run/current-system/sw/bin`
-- Active system profile: `readlink /run/current-system/sw`
-- NixOS package list: `nix-store --query --requisites /run/current-system/sw | sort`
-
-CLAWDINATOR-specific tools:
-- `/usr/local/bin/memory-read`
-- `/usr/local/bin/memory-write`
-- `/usr/local/bin/memory-edit`
-
-Seeded repos:
-- `/var/lib/clawd/repos/clawdbot`
-- `/var/lib/clawd/repos/nix-clawdbot`
-- `/var/lib/clawd/repos/clawdinators`
-- `/var/lib/clawd/repos/clawdhub`
-- `/var/lib/clawd/repos/nix-steipete-tools`
+<!-- Toolchain list is appended at seed time from /etc/clawdinator/tools.md -->

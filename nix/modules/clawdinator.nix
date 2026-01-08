@@ -79,6 +79,10 @@ let
         in
         "${repo.name}\t${repo.url}\t${branch}")
       cfg.repoSeeds);
+  toolchain = import ../tools/clawdinator-tools.nix { inherit pkgs; };
+  toolchainMd = lib.concatMapStringsSep "\n"
+    (tool: "- **${tool.name}** — ${tool.description}")
+    toolchain.docs;
 
   tokenWrapper =
     if cfg.anthropicApiKeyFile != null || cfg.discordTokenFile != null || cfg.githubPatFile != null then
@@ -346,9 +350,7 @@ in
 
     environment.systemPackages =
       [ cfg.package ]
-      ++ lib.optional cfg.memoryEfs.enable pkgs.nfs-utils
-      ++ lib.optional cfg.memoryEfs.enable pkgs.stunnel
-      ++ [ pkgs.util-linux ];
+      ++ toolchain.packages;
 
     environment.etc."clawd/clawdbot.json".source = configSource;
     environment.etc."clawdinator/bin/memory-read" = {
@@ -362,6 +364,33 @@ in
     environment.etc."clawdinator/bin/memory-edit" = {
       source = ../../scripts/memory-edit.sh;
       mode = "0755";
+    };
+    environment.etc."clawdinator/tools.md" = {
+      mode = "0644";
+      text = ''
+        ## Installed Toolchain (Nix)
+
+        ${toolchainMd}
+
+        ## Local scripts (installed by Nix)
+        - **memory-read** — shared-lock read from `/memory`.
+        - **memory-write** — exclusive-lock write to `/memory`.
+        - **memory-edit** — exclusive-lock in-place edit for `/memory`.
+
+        ## nix-steipete-tools (repo seeded, binaries not installed on Linux yet)
+        Darwin-only upstream; the repo is seeded at `/var/lib/clawd/repos/nix-steipete-tools`.
+        Tools expected once Linux packages exist:
+        - summarize
+        - gogcli
+        - camsnap
+        - sonoscli
+        - bird
+        - peekaboo
+        - poltergeist
+        - sag
+        - imsg
+        - oracle
+      '';
     };
     environment.etc."stunnel/efs.conf" = lib.mkIf cfg.memoryEfs.enable {
       mode = "0644";
