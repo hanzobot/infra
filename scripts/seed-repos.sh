@@ -6,7 +6,8 @@ base_dir="$2"
 auth_header=""
 
 if [ -n "${GITHUB_TOKEN:-}" ]; then
-  auth_header="Authorization: Bearer ${GITHUB_TOKEN}"
+  basic_auth="$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 | tr -d '\n')"
+  auth_header="Authorization: Basic ${basic_auth}"
 fi
 
 if [ ! -f "$list_file" ]; then
