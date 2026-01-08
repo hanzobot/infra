@@ -61,10 +61,10 @@
         enabled = true;
         dm.enabled = false;
         guilds = {
-          "<GUILD_ID>" = {
+          "1456350064065904867" = {
             requireMention = true;
             channels = {
-              "<CHANNEL_NAME>" = { allow = true; requireMention = true; };
+              "1458426982579830908" = { allow = true; requireMention = true; };
             };
           };
         };
