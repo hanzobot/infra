@@ -27,7 +27,6 @@
             fi
             exec node-gyp "$@"
           '';
-          stripAnsiSrc = ./nix/vendor/strip-ansi;
         in {
           clawdbot-gateway = prev.clawdbot-gateway.overrideAttrs (old: {
             env = (old.env or {}) // {
@@ -70,12 +69,18 @@
             postInstall = (old.postInstall or "") + ''
               pi_dir="$(find "$out/lib/clawdbot/node_modules/.pnpm" -maxdepth 1 -type d -name "@mariozechner+pi-coding-agent@*" | head -n1)"
               if [ -z "$pi_dir" ]; then
-                echo "pi-coding-agent directory not found for strip-ansi shim" >&2
+                echo "pi-coding-agent directory not found for strip-ansi link" >&2
+                exit 1
+              fi
+              strip_src="$(find "$out/lib/clawdbot/node_modules/.pnpm" -maxdepth 2 -type d -path "*strip-ansi@*/node_modules/strip-ansi" | head -n1)"
+              if [ -z "$strip_src" ]; then
+                echo "strip-ansi not found in pnpm store" >&2
                 exit 1
               fi
               target="$pi_dir/node_modules/strip-ansi"
-              mkdir -p "$target"
-              cp -R ${stripAnsiSrc}/* "$target"/
+              rm -rf "$target"
+              mkdir -p "$(dirname "$target")"
+              ln -s "$strip_src" "$target"
             '';
           });
         };
