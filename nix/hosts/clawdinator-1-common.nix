@@ -67,11 +67,11 @@ in
           maxConcurrent = 4;
           skipBootstrap = true;
           models = {
-            "openai/gpt-5.2" = { alias = "Codex"; };
+            "openai/gpt-5-codex" = { alias = "Codex"; };
             "anthropic/claude-opus-4-5" = { alias = "Opus"; };
           };
           model = {
-            primary = "openai/gpt-5.2";
+            primary = "openai/gpt-5-codex";
             fallbacks = [ "anthropic/claude-opus-4-5" ];
           };
         };
