@@ -528,19 +528,23 @@ in
           (secret: "\"${secret.file}\"")
           (lib.attrValues config.age.secrets);
       in
-      lib.mkBefore ''
-        found=0
-        for file in ${secretFiles}; do
-          if [ -f "$file" ]; then
-            found=1
-            break
+      lib.mkMerge [
+        (lib.mkBefore ''
+          found=0
+          for file in ${secretFiles}; do
+            if [ -f "$file" ]; then
+              found=1
+              break
+            fi
+          done
+          if [ "$found" -eq 0 ]; then
+            echo "[agenix] no encrypted secrets present; skipping install"
+          else
+        '')
+        (lib.mkAfter ''
           fi
-        done
-        if [ "$found" -eq 0 ]; then
-          echo "[agenix] no encrypted secrets present; skipping install"
-          exit 0
-        fi
-      ''
+        '')
+      ]
     );
 
     systemd.tmpfiles.rules = [
