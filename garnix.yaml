@@ -1,5 +1,5 @@
 builds:
   include:
     - "packages.*"
-    - "nixosConfigurations.clawdinator-1.config.system.build.toplevel"
-    - "nixosConfigurations.clawdinator-1-image.config.system.build.toplevel"
+    - "packages.x86_64-linux.clawdinator-system"
+    - "packages.x86_64-linux.clawdinator-image-system"

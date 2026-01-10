@@ -31,10 +31,15 @@
             if pkgs ? clawdbot-gateway
             then pkgs.clawdbot-gateway
             else pkgs.clawdbot;
+          systemPackages =
+            if system == "x86_64-linux" then {
+              clawdinator-system = self.nixosConfigurations.clawdinator-1.config.system.build.toplevel;
+              clawdinator-image-system = self.nixosConfigurations.clawdinator-1-image.config.system.build.toplevel;
+            } else {};
         in {
           clawdbot-gateway = gateway;
           default = gateway;
-        });
+        } // systemPackages);
 
       nixosConfigurations.clawdinator-1 = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
