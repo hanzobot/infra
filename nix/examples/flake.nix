@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nix-bot.url = "github:bot/nix-bot"; # latest upstream
+    nix-bot.url = "github:hanzobot/nix"; # latest upstream
     agenix.url = "github:ryantm/agenix";
     secrets = {
       url = "path:../../../nix/nix-secrets";

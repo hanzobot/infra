@@ -2,7 +2,7 @@
   description = "BOTCTL infra + Nix modules";
 
   inputs = {
-    nix-bot.url = "github:bot/nix-bot"; # latest upstream
+    nix-bot.url = "github:hanzobot/nix"; # latest upstream
     nixpkgs.follows = "nix-bot/nixpkgs";
     agenix.url = "github:ryantm/agenix";
   };
