@@ -3,7 +3,7 @@
 Notes specific to Discord behavior, channels, and norms.
 
 Required config:
-- Define `services.clawdinator.config.discord` with guild/channel allowlist.
+- Define `services.botctl.config.discord` with guild/channel allowlist.
 - Prefer guild + channel IDs (Developer Mode), not names.
 - Require mentions in shared channels.
 

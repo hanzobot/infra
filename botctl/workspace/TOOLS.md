@@ -40,4 +40,4 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 Add whatever helps you do your job. This is your cheat sheet.
 
-<!-- Toolchain list is appended at seed time from /etc/clawdinator/tools.md -->
+<!-- Toolchain list is appended at seed time from /etc/botctl/tools.md -->

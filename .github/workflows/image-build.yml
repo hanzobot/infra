@@ -52,8 +52,8 @@ jobs:
           CLAWDINATOR_AGE_KEY: ${{ secrets.CLAWDINATOR_AGE_KEY }}
         run: |
           mkdir -p nix/keys
-          printf '%s' "${CLAWDINATOR_AGE_KEY}" > nix/keys/clawdinator.agekey
-          chmod 600 nix/keys/clawdinator.agekey
+          printf '%s' "${CLAWDINATOR_AGE_KEY}" > nix/keys/botinator.agekey
+          chmod 600 nix/keys/botinator.agekey
 
       - name: Fetch age secrets
         env:
@@ -65,10 +65,10 @@ jobs:
           mkdir -p nix/age-secrets
           aws s3 sync "s3://${S3_BUCKET}/age-secrets" nix/age-secrets
           for file in \
-            nix/age-secrets/clawdinator-github-app.pem.age \
-            nix/age-secrets/clawdinator-discord-token.age \
-            nix/age-secrets/clawdinator-anthropic-api-key.age \
-            nix/age-secrets/clawdinator-openai-api-key-peter-2.age
+            nix/age-secrets/botinator-github-app.pem.age \
+            nix/age-secrets/botinator-discord-token.age \
+            nix/age-secrets/botinator-anthropic-api-key.age \
+            nix/age-secrets/botinator-openai-api-key-peter-2.age
           do
             test -f "$file"
           done
@@ -78,10 +78,10 @@ jobs:
           GITHUB_APP_ID: "2607181"
           GITHUB_APP_INSTALLATION_ID: "102951645"
         run: |
-          age -d -i nix/keys/clawdinator.agekey \
-            -o /tmp/clawdinator-github-app.pem \
-            nix/age-secrets/clawdinator-github-app.pem.age
-          export GITHUB_APP_PEM_FILE=/tmp/clawdinator-github-app.pem
+          age -d -i nix/keys/botinator.agekey \
+            -o /tmp/botinator-github-app.pem \
+            nix/age-secrets/botinator-github-app.pem.age
+          export GITHUB_APP_PEM_FILE=/tmp/botinator-github-app.pem
           token="$(scripts/mint-github-app-token.sh)"
           echo "GITHUB_TOKEN=${token}" >> "${GITHUB_ENV}"
 
@@ -97,7 +97,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          BOOTSTRAP_PREFIX: bootstrap/clawdinator-1
+          BOOTSTRAP_PREFIX: bootstrap/botinator-1
         run: |
           bash scripts/upload-bootstrap.sh
 
@@ -121,7 +121,7 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
           S3_KEY: ${{ env.S3_KEY }}
-          AMI_DESCRIPTION: clawdinator-nixos
+          AMI_DESCRIPTION: botinator-nixos
         run: |
           ami_id="$(scripts/import-image.sh)"
           echo "AMI_ID=${ami_id}" >> "${GITHUB_ENV}"

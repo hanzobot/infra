@@ -1,6 +1,6 @@
 # OpenTofu (AWS S3 Image Bucket)
 
-Goal: use the CLAWDINATOR S3 bucket for images + bootstrap artifacts, create the VM Import role, and attach import permissions to the CI IAM user.
+Goal: use the BOTCTL S3 bucket for images + bootstrap artifacts, create the VM Import role, and attach import permissions to the CI IAM user.
 Also provisions EFS for shared memory.
 
 Prereqs:

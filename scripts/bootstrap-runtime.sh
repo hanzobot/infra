@@ -11,7 +11,7 @@ repo_seeds_archive="${7:-repo-seeds.tar.zst}"
 
 sentinel="${secrets_dir}/.bootstrap-ok"
 if [ -f "${sentinel}" ]; then
-  echo "clawdinator-bootstrap: already initialized"
+  echo "botctl-bootstrap: already initialized"
   exit 0
 fi
 
@@ -31,15 +31,15 @@ tmp_secrets="${workdir}/secrets"
 mkdir -p "${tmp_secrets}"
 tar --zstd -xf "${workdir}/secrets.tar.zst" -C "${tmp_secrets}"
 
-if [ ! -f "${tmp_secrets}/clawdinator.agekey" ]; then
-  echo "clawdinator-bootstrap: missing clawdinator.agekey in secrets archive" >&2
+if [ ! -f "${tmp_secrets}/botctl.agekey" ]; then
+  echo "botctl-bootstrap: missing botctl.agekey in secrets archive" >&2
   exit 1
 fi
 
-install -m 0400 "${tmp_secrets}/clawdinator.agekey" "${age_key_path}"
+install -m 0400 "${tmp_secrets}/botctl.agekey" "${age_key_path}"
 
 if [ ! -d "${tmp_secrets}/secrets" ]; then
-  echo "clawdinator-bootstrap: missing secrets/ directory in secrets archive" >&2
+  echo "botctl-bootstrap: missing secrets/ directory in secrets archive" >&2
   exit 1
 fi
 
@@ -49,4 +49,4 @@ chmod -R u=rw,go= "${secrets_dir}" || true
 tar --zstd -xf "${workdir}/repo-seeds.tar.zst" -C "${repo_seeds_dir}"
 
 touch "${sentinel}"
-echo "clawdinator-bootstrap: done"
+echo "botctl-bootstrap: done"

@@ -1,29 +1,29 @@
 {
-  description = "Example CLAWDINATOR host flake";
+  description = "Example BOTCTL host flake";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nix-clawdbot.url = "github:clawdbot/nix-clawdbot"; # latest upstream
+    nix-bot.url = "github:bot/nix-bot"; # latest upstream
     agenix.url = "github:ryantm/agenix";
     secrets = {
       url = "path:../../../nix/nix-secrets";
       flake = false;
     };
-    clawdinators.url = "path:../..";
+    botctls.url = "path:../..";
   };
 
-  outputs = { self, nixpkgs, nix-clawdbot, agenix, secrets, clawdinators }:
+  outputs = { self, nixpkgs, nix-bot, agenix, secrets, botctls }:
     let
       system = "x86_64-linux";
     in {
-      nixosConfigurations.clawdinator-1 = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.botctl-1 = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit secrets; };
         modules = [
-          ({ pkgs, ... }: { nixpkgs.overlays = [ clawdinators.overlays.default ]; })
+          ({ pkgs, ... }: { nixpkgs.overlays = [ botctls.overlays.default ]; })
           agenix.nixosModules.default
-          clawdinators.nixosModules.clawdinator
-          ./clawdinator-host.nix
+          botctls.nixosModules.botctl
+          ./botctl-host.nix
         ];
       };
     };

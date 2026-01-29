@@ -1,4 +1,4 @@
-# CLAWDINATOR Agent Notes
+# BOTCTL Agent Notes
 
 Read these before acting:
 - docs/PHILOSOPHY.md
@@ -21,22 +21,22 @@ Memory references:
 Repo rule: no inline scripting languages (Python/Node/etc.) in Nix or shell blocks; put logic in script files and call them.
 
 System ownership (3 repos):
-- `clawdbot`: upstream runtime and behavior.
-- `nix-clawdbot`: packaging/build fixes for `clawdbot`.
-- `clawdinators`: infra, NixOS config, secrets wiring, deployment flow.
+- `bot`: upstream runtime and behavior.
+- `nix-bot`: packaging/build fixes for `bot`.
+- `botctls`: infra, NixOS config, secrets wiring, deployment flow.
 
 Maintainer role:
 - Monitor issues + PRs and keep an inventory of what needs human attention.
 - Surface priorities and context; do not file issues or modify code unless asked.
-- Track running versions (clawdbot/nix-clawdbot/clawdinators) and note them in `memory/ops.md`.
+- Track running versions (bot/nix-bot/botctls) and note them in `memory/ops.md`.
 
 Toolchain workflow (repo source of truth):
-- Add/remove tools in `nix/tools/clawdinator-tools.nix` (packages + descriptions).
-- Tools list is rendered into `/etc/clawdinator/tools.md` by Nix and appended to workspace `TOOLS.md` at seed time.
-- Keep `clawdinator/workspace/TOOLS.md` aligned with upstream template; do not hardcode tool lists there.
-- When you add a new tool, verify it appears in `/etc/clawdinator/tools.md` and in the workspace `TOOLS.md` after seed.
+- Add/remove tools in `nix/tools/botctl-tools.nix` (packages + descriptions).
+- Tools list is rendered into `/etc/botctl/tools.md` by Nix and appended to workspace `TOOLS.md` at seed time.
+- Keep `botctl/workspace/TOOLS.md` aligned with upstream template; do not hardcode tool lists there.
+- When you add a new tool, verify it appears in `/etc/botctl/tools.md` and in the workspace `TOOLS.md` after seed.
 
-The Zen of ~~Python~~ Clawdbot, ~~by~~ shamelessly stolen from Tim Peters:
+The Zen of ~~Python~~ Bot, ~~by~~ shamelessly stolen from Tim Peters:
 - Beautiful is better than ugly.
 - Explicit is better than implicit.
 - Simple is better than complex.
@@ -60,20 +60,20 @@ The Zen of ~~Python~~ Clawdbot, ~~by~~ shamelessly stolen from Tim Peters:
 Deploy flow (automation-first):
 - Use `devenv.nix` for tooling (nixos-generators, awscli2).
 - Build a bootstrap NixOS image with nixos-generators (raw) and upload it to S3.
-  - Use `nix/hosts/clawdinator-1-image.nix` for image builds.
+  - Use `nix/hosts/botctl-1-image.nix` for image builds.
 - CI is preferred: `.github/workflows/image-build.yml` runs build → S3 upload → AMI import.
 - Resume AMI pipeline work immediately if it stalls; do not use rsync as a workaround. Host edits are allowed but must be committed and baked into a new AMI to persist.
-- CI must provide `CLAWDINATOR_AGE_KEY` to build + upload the runtime bootstrap bundle to S3.
+- CI must provide `BOTCTL_AGE_KEY` to build + upload the runtime bootstrap bundle to S3.
 - Bootstrap bundle location: `s3://${S3_BUCKET}/bootstrap/<instance>/` (secrets + repo seeds).
 - Bootstrap S3 bucket + scoped IAM user + VM Import role with `infra/opentofu/aws` (use homelab-admin creds).
 - Bootstrap AWS instances from the AMI with `infra/opentofu/aws` (set `TF_VAR_ami_id`).
 - Import the image into AWS as an AMI (snapshot import + register image).
 - Ensure secrets are encrypted to the baked agenix key (see `../nix/nix-secrets/secrets.nix`).
-- Ensure required secrets exist: `clawdinator-github-app.pem`, `clawdinator-discord-token`, `clawdinator-anthropic-api-key`.
+- Ensure required secrets exist: `botctl-github-app.pem`, `botctl-discord-token`, `botctl-anthropic-api-key`.
 - Update `nix/hosts/<host>.nix` (Discord allowlist, GitHub App installationId, identity name).
 - Discord must use `messages.queue.byProvider.discord = "interrupt"`; `queue` delays replies to heartbeat and makes the bot appear dead.
-- Ensure `/var/lib/clawd/repo` contains this repo (self-update requires it).
-- Verify systemd services: `clawdinator`, `clawdinator-github-app-token`, `clawdinator-self-update`.
+- Ensure `/var/lib/bot/repo` contains this repo (self-update requires it).
+- Verify systemd services: `botctl`, `botctl-github-app-token`, `botctl-self-update`.
 - Commit and push changes; repo is the source of truth.
 
 Bootstrap (local):
@@ -87,13 +87,13 @@ Bootstrap (local):
   - `TF_VAR_root_volume_size_gb=40` (bump if Nix store runs out of space)
 - Run `tofu init` + `tofu apply` in `infra/opentofu/aws`.
 - After apply, update CI secrets from outputs:
-  - `tofu output -raw access_key_id` → `clawdinator-image-uploader-access-key-id.age`
-  - `tofu output -raw secret_access_key` → `clawdinator-image-uploader-secret-access-key.age`
-  - `tofu output -raw bucket_name` → `clawdinator-image-bucket-name.age`
-  - `tofu output -raw aws_region` → `clawdinator-image-bucket-region.age`
+  - `tofu output -raw access_key_id` → `botctl-image-uploader-access-key-id.age`
+  - `tofu output -raw secret_access_key` → `botctl-image-uploader-secret-access-key.age`
+  - `tofu output -raw bucket_name` → `botctl-image-bucket-name.age`
+  - `tofu output -raw aws_region` → `botctl-image-bucket-region.age`
   - Then `gh secret set` for `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `S3_BUCKET`.
 - Get the latest AMI ID:
-  - `aws ec2 describe-images --region eu-central-1 --owners self --filters "Name=tag:clawdinator,Values=true" --query "Images | sort_by(@,&CreationDate)[-1].[ImageId,Name,CreationDate]" --output text`
+  - `aws ec2 describe-images --region eu-central-1 --owners self --filters "Name=tag:botctl,Values=true" --query "Images | sort_by(@,&CreationDate)[-1].[ImageId,Name,CreationDate]" --output text`
 - If SSH access is lost, use SSM (instance profile is attached via OpenTofu) to re-add `/root/.ssh/authorized_keys`.
 
 Key principle: mental notes don’t survive restarts — write it to a file.

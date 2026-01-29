@@ -13,6 +13,6 @@ mkdir -p "$dst"
 
 rsync -rlt --delete --chmod=Du=rwx,Dgo=rx,Fu=rw,Fgo=r --exclude 'BOOTSTRAP.md' "$src/" "$dst/"
 
-if [ -f "/etc/clawdinator/tools.md" ]; then
-  printf '\n%s\n' "$(cat /etc/clawdinator/tools.md)" >> "$dst/TOOLS.md"
+if [ -f "/etc/botctl/tools.md" ]; then
+  printf '\n%s\n' "$(cat /etc/botctl/tools.md)" >> "$dst/TOOLS.md"
 fi

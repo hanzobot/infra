@@ -3,7 +3,7 @@ set -euo pipefail
 
 out_dir="${OUT_DIR:-dist}"
 format="${IMAGE_FORMAT:-raw}"
-flake_ref=".#clawdinator-1-image"
+flake_ref=".#botctl-1-image"
 
 if [ -e "${out_dir}" ]; then
   rm -rf "${out_dir}"

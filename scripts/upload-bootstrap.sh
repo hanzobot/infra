@@ -3,10 +3,10 @@ set -euo pipefail
 
 bucket="${S3_BUCKET:?S3_BUCKET required}"
 region="${AWS_REGION:?AWS_REGION required}"
-prefix="${BOOTSTRAP_PREFIX:-bootstrap/clawdinator-1}"
+prefix="${BOOTSTRAP_PREFIX:-bootstrap/botctl-1}"
 
 secrets_dir="${SECRETS_DIR:-nix/age-secrets}"
-age_key_file="${AGE_KEY_FILE:-nix/keys/clawdinator.agekey}"
+age_key_file="${AGE_KEY_FILE:-nix/keys/botctl.agekey}"
 repo_seeds_dir="${REPO_SEEDS_DIR:-repo-seeds}"
 
 if [ ! -f "${age_key_file}" ]; then
@@ -32,7 +32,7 @@ trap cleanup EXIT
 
 staging="${workdir}/staging"
 mkdir -p "${staging}/secrets"
-cp "${age_key_file}" "${staging}/clawdinator.agekey"
+cp "${age_key_file}" "${staging}/botctl.agekey"
 cp -a "${secrets_dir}/." "${staging}/secrets/"
 
 tar --zstd -cf "${workdir}/secrets.tar.zst" -C "${staging}" .

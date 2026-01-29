@@ -2,7 +2,7 @@
 set -euo pipefail
 
 dest="${1:-repo-seeds}"
-list_file="${2:-clawdinator/repos.tsv}"
+list_file="${2:-botctl/repos.tsv}"
 
 if [ ! -f "$list_file" ]; then
   echo "prepare-repo-seeds: missing repo list: $list_file" >&2

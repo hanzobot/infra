@@ -29,8 +29,8 @@ if [ -z "${format}" ]; then
 fi
 
 timestamp="$(date -u +%Y%m%d%H%M%S)"
-ami_name="${AMI_NAME:-clawdinator-nixos-${timestamp}}"
-ami_description="${AMI_DESCRIPTION:-clawdinator-nixos}"
+ami_name="${AMI_NAME:-botctl-nixos-${timestamp}}"
+ami_description="${AMI_DESCRIPTION:-botctl-nixos}"
 
 task_id="$(
   aws ec2 import-snapshot \
@@ -87,7 +87,7 @@ for _ in {1..120}; do
       aws ec2 create-tags \
         --region "${region}" \
         --resources "${image_id}" \
-        --tags "Key=Name,Value=${ami_name}" "Key=clawdinator,Value=true"
+        --tags "Key=Name,Value=${ami_name}" "Key=botctl,Value=true"
       echo "AMI_ID=${image_id}" >&2
       echo "${image_id}"
       exit 0

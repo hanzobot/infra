@@ -1,18 +1,18 @@
 { lib, pkgs, config, ... }:
 let
-  cfg = config.services.clawdinator;
+  cfg = config.services.botctl;
 
   configSource =
     if cfg.configFile != null
     then cfg.configFile
-    else pkgs.writeText "clawdbot.json" (builtins.toJSON cfg.config);
+    else pkgs.writeText "bot.json" (builtins.toJSON cfg.config);
 
-  updateScript = pkgs.writeShellScript "clawdinator-self-update" ''
+  updateScript = pkgs.writeShellScript "botctl-self-update" ''
     set -euo pipefail
 
     repo="${cfg.selfUpdate.flakePath}"
     if [ ! -d "$repo/.git" ]; then
-      echo "clawdinator-self-update: missing git repo at $repo" >&2
+      echo "botctl-self-update: missing git repo at $repo" >&2
       exit 1
     fi
 
@@ -20,7 +20,7 @@ let
     ${cfg.selfUpdate.updateCommand}
   '';
 
-  githubTokenScript = pkgs.writeShellScript "clawdinator-github-app-token" ''
+  githubTokenScript = pkgs.writeShellScript "botctl-github-app-token" ''
     set -euo pipefail
 
     token_env="${cfg.githubApp.tokenEnvFile}"
@@ -54,7 +54,7 @@ let
 
     token="$(printf '%s' "$resp" | jq -r '.token')"
     if [ -z "$token" ] || [ "$token" = "null" ]; then
-      echo "clawdinator-github-app-token: failed to mint token" >&2
+      echo "botctl-github-app-token: failed to mint token" >&2
       echo "$resp" >&2
       exit 1
     fi
@@ -66,15 +66,15 @@ let
   '';
 
   defaultPackage =
-    if pkgs ? clawdbot-gateway
-    then pkgs.clawdbot-gateway
-    else pkgs.clawdbot;
+    if pkgs ? botd
+    then pkgs.botd
+    else pkgs.bot;
 
-  configPath = "/etc/clawd/clawdbot.json";
+  configPath = "/etc/bot/bot.json";
   workspaceDir = "${cfg.stateDir}/workspace";
   repoSeedBaseDir = cfg.repoSeedBaseDir;
   logDir = "${cfg.stateDir}/logs";
-  repoSeedsFile = pkgs.writeText "clawdinator-repos.tsv"
+  repoSeedsFile = pkgs.writeText "botctl-repos.tsv"
     (lib.concatMapStringsSep "\n"
       (repo:
         let
@@ -82,14 +82,14 @@ let
         in
         "${repo.name}\t${repo.url}\t${branch}")
       cfg.repoSeeds);
-  toolchain = import ../tools/clawdinator-tools.nix { inherit pkgs; };
+  toolchain = import ../tools/botctl-tools.nix { inherit pkgs; };
   toolchainMd = lib.concatMapStringsSep "\n"
     (tool: "- **${tool.name}** — ${tool.description}")
     toolchain.docs;
 
   tokenWrapper =
     if cfg.anthropicApiKeyFile != null || cfg.discordTokenFile != null || cfg.githubPatFile != null || cfg.openaiApiKeyFile != null then
-      pkgs.writeShellScriptBin "clawdinator-gateway" ''
+      pkgs.writeShellScriptBin "botctl-gateway" ''
         set -euo pipefail
 
         read_token() {
@@ -99,13 +99,13 @@ let
             return 0
           fi
           if [ ! -f "$path" ]; then
-            echo "clawdinator: token file not found: $path" >&2
+            echo "botctl: token file not found: $path" >&2
             exit 1
           fi
           local value
           value="$(cat "$path")"
           if [ -z "$value" ]; then
-            echo "clawdinator: token file is empty: $path" >&2
+            echo "botctl: token file is empty: $path" >&2
             exit 1
           fi
           for name in $names; do
@@ -118,48 +118,48 @@ let
         ${lib.optionalString (cfg.githubPatFile != null) "read_token \"GITHUB_TOKEN GH_TOKEN\" \"${cfg.githubPatFile}\""}
         ${lib.optionalString (cfg.openaiApiKeyFile != null) "read_token \"OPENAI_API_KEY OPEN_AI_APIKEY\" \"${cfg.openaiApiKeyFile}\""}
 
-        exec "${cfg.package}/bin/clawdbot" gateway --port ${toString cfg.gatewayPort}
+        exec "${cfg.package}/bin/bot" gateway --port ${toString cfg.gatewayPort}
       ''
     else
       null;
 in
 {
-  options.services.clawdinator = with lib; {
-    enable = mkEnableOption "CLAWDINATOR (Clawdbot gateway on NixOS)";
+  options.services.botctl = with lib; {
+    enable = mkEnableOption "BOTCTL (Bot gateway on NixOS)";
 
     instanceName = mkOption {
       type = types.str;
-      default = "CLAWDINATOR-1";
+      default = "BOTCTL-1";
       description = "Human-readable instance name (used in config examples).";
     };
 
     user = mkOption {
       type = types.str;
-      default = "clawdinator";
+      default = "botctl";
       description = "System user for the gateway.";
     };
 
     group = mkOption {
       type = types.str;
-      default = "clawdinator";
+      default = "botctl";
       description = "System group for the gateway.";
     };
 
     package = mkOption {
       type = types.package;
       default = defaultPackage;
-      description = "Clawdbot gateway package (from nix-clawdbot overlay).";
+      description = "Bot gateway package (from nix-bot overlay).";
     };
 
     stateDir = mkOption {
       type = types.str;
-      default = "/var/lib/clawd";
-      description = "Base state directory for CLAWDINATOR.";
+      default = "/var/lib/bot";
+      description = "Base state directory for BOTCTL.";
     };
 
     memoryDir = mkOption {
       type = types.str;
-      default = "/var/lib/clawd/memory";
+      default = "/var/lib/bot/memory";
       description = "Shared hive-mind memory directory.";
     };
 
@@ -184,7 +184,7 @@ in
 
     repoSeedBaseDir = mkOption {
       type = types.str;
-      default = "/var/lib/clawd/repos";
+      default = "/var/lib/bot/repos";
       description = "Base directory for seeded git repos.";
     };
 
@@ -250,51 +250,51 @@ in
 
       ageKeyPath = mkOption {
         type = types.str;
-        default = "/etc/agenix/keys/clawdinator.agekey";
+        default = "/etc/agenix/keys/botctl.agekey";
         description = "Destination path for the agenix identity key.";
       };
 
       secretsDir = mkOption {
         type = types.str;
-        default = "/var/lib/clawd/nix-secrets";
+        default = "/var/lib/bot/nix-secrets";
         description = "Destination directory for encrypted age secrets.";
       };
 
       repoSeedsDir = mkOption {
         type = types.str;
-        default = "/var/lib/clawd/repo-seeds";
+        default = "/var/lib/bot/repo-seeds";
         description = "Destination directory for repo seed snapshots.";
       };
     };
 
     workspaceTemplateDir = mkOption {
       type = types.path;
-      default = ../../clawdinator/workspace;
+      default = ../../botctl/workspace;
       description = "Template directory for seeding the agent workspace.";
     };
 
     gatewayPort = mkOption {
       type = types.port;
       default = 18789;
-      description = "Gateway port for Clawdbot.";
+      description = "Gateway port for Bot.";
     };
 
     config = mkOption {
       type = types.attrs;
       default = {};
-      description = "Raw Clawdbot config JSON (merged into clawdbot.json).";
+      description = "Raw Bot config JSON (merged into bot.json).";
     };
 
     configFile = mkOption {
       type = types.nullOr types.path;
       default = null;
-      description = "Optional path to a clawdbot.json file. Overrides config attr.";
+      description = "Optional path to a bot.json file. Overrides config attr.";
     };
 
     cronJobsFile = mkOption {
       type = types.nullOr types.path;
       default = null;
-      description = "Optional path to a cron jobs JSON file (deployed to /etc/clawd/cron-jobs.json).";
+      description = "Optional path to a cron jobs JSON file (deployed to /etc/bot/cron-jobs.json).";
     };
 
     anthropicApiKeyFile = mkOption {
@@ -332,7 +332,7 @@ in
 
       flakePath = mkOption {
         type = types.str;
-        default = "/var/lib/clawd/repo";
+        default = "/var/lib/bot/repo";
         description = "Path to this repo on the host (used for flake updates).";
       };
 
@@ -369,13 +369,13 @@ in
 
       privateKeyFile = mkOption {
         type = types.str;
-        default = "/etc/clawd/github-app.pem";
+        default = "/etc/bot/github-app.pem";
         description = "Path to GitHub App private key (PEM).";
       };
 
       tokenEnvFile = mkOption {
         type = types.str;
-        default = "/run/clawd/github-app.env";
+        default = "/run/bot/github-app.env";
         description = "Environment file containing GITHUB_APP_TOKEN.";
       };
 
@@ -403,7 +403,7 @@ in
 
       org = mkOption {
         type = types.str;
-        default = "clawdbot";
+        default = "bot";
         description = "GitHub org to sync.";
       };
     };
@@ -419,20 +419,20 @@ in
 
     assertions = [
       {
-        assertion = (pkgs ? clawdbot-gateway) || (pkgs ? clawdbot);
-        message = "services.clawdinator requires nix-clawdbot overlay (pkgs.clawdbot-gateway).";
+        assertion = (pkgs ? botd) || (pkgs ? bot);
+        message = "services.botctl requires nix-bot overlay (pkgs.botd).";
       }
       {
         assertion = cfg.githubApp.enable || cfg.githubPatFile != null;
-        message = "services.clawdinator requires a GitHub token (enable githubApp or set githubPatFile).";
+        message = "services.botctl requires a GitHub token (enable githubApp or set githubPatFile).";
       }
       {
         assertion = (!cfg.githubApp.enable) || (cfg.githubApp.appId != "" && cfg.githubApp.installationId != "");
-        message = "services.clawdinator.githubApp requires appId and installationId.";
+        message = "services.botctl.githubApp requires appId and installationId.";
       }
       {
         assertion = (!cfg.memoryEfs.enable) || (cfg.memoryEfs.fileSystemId != "");
-        message = "services.clawdinator.memoryEfs requires fileSystemId.";
+        message = "services.botctl.memoryEfs requires fileSystemId.";
       }
     ];
 
@@ -448,29 +448,29 @@ in
       [ cfg.package ]
       ++ toolchain.packages
       ++ [
-        (pkgs.writeShellScriptBin "memory-read" ''exec /etc/clawdinator/bin/memory-read "$@"'')
-        (pkgs.writeShellScriptBin "memory-write" ''exec /etc/clawdinator/bin/memory-write "$@"'')
-        (pkgs.writeShellScriptBin "memory-edit" ''exec /etc/clawdinator/bin/memory-edit "$@"'')
+        (pkgs.writeShellScriptBin "memory-read" ''exec /etc/botctl/bin/memory-read "$@"'')
+        (pkgs.writeShellScriptBin "memory-write" ''exec /etc/botctl/bin/memory-write "$@"'')
+        (pkgs.writeShellScriptBin "memory-edit" ''exec /etc/botctl/bin/memory-edit "$@"'')
       ];
 
-    environment.etc."clawd/clawdbot.json".source = configSource;
-    environment.etc."clawd/cron-jobs.json" = lib.mkIf (cfg.cronJobsFile != null) {
+    environment.etc."bot/bot.json".source = configSource;
+    environment.etc."bot/cron-jobs.json" = lib.mkIf (cfg.cronJobsFile != null) {
       source = cfg.cronJobsFile;
       mode = "0644";
     };
-    environment.etc."clawdinator/bin/memory-read" = {
+    environment.etc."botctl/bin/memory-read" = {
       source = ../../scripts/memory-read.sh;
       mode = "0755";
     };
-    environment.etc."clawdinator/bin/memory-write" = {
+    environment.etc."botctl/bin/memory-write" = {
       source = ../../scripts/memory-write.sh;
       mode = "0755";
     };
-    environment.etc."clawdinator/bin/memory-edit" = {
+    environment.etc."botctl/bin/memory-edit" = {
       source = ../../scripts/memory-edit.sh;
       mode = "0755";
     };
-    environment.etc."clawdinator/tools.md" = {
+    environment.etc."botctl/tools.md" = {
       mode = "0644";
       text = ''
         ## Installed Toolchain (Nix)
@@ -543,9 +543,9 @@ in
       "d ${cfg.memoryDir} 0750 ${cfg.user} ${cfg.group} - -"
       "d ${repoSeedBaseDir} 0750 ${cfg.user} ${cfg.group} - -"
       "d /usr/local/bin 0755 root root - -"
-      "L+ /usr/local/bin/memory-read - - - - /etc/clawdinator/bin/memory-read"
-      "L+ /usr/local/bin/memory-write - - - - /etc/clawdinator/bin/memory-write"
-      "L+ /usr/local/bin/memory-edit - - - - /etc/clawdinator/bin/memory-edit"
+      "L+ /usr/local/bin/memory-read - - - - /etc/botctl/bin/memory-read"
+      "L+ /usr/local/bin/memory-write - - - - /etc/botctl/bin/memory-write"
+      "L+ /usr/local/bin/memory-edit - - - - /etc/botctl/bin/memory-edit"
     ];
 
     fileSystems = lib.mkIf cfg.memoryEfs.enable {
@@ -560,36 +560,36 @@ in
           "timeo=600"
           "retrans=2"
           "noresvport"
-          "x-systemd.requires=clawdinator-efs-stunnel.service"
-          "x-systemd.after=clawdinator-efs-stunnel.service"
+          "x-systemd.requires=botctl-efs-stunnel.service"
+          "x-systemd.after=botctl-efs-stunnel.service"
         ];
       };
     };
 
-    systemd.services.clawdinator = {
-      description = "CLAWDINATOR (Clawdbot gateway)";
+    systemd.services.botctl = {
+      description = "BOTCTL (Bot gateway)";
       wantedBy = [ "multi-user.target" ];
       after =
         [ "network.target" ]
-        ++ lib.optional cfg.bootstrap.enable "clawdinator-bootstrap.service"
-        ++ lib.optional cfg.bootstrap.enable "clawdinator-agenix.service"
-        ++ lib.optional cfg.githubApp.enable "clawdinator-github-app-token.service"
-        ++ lib.optional (cfg.repoSeedSnapshotDir != null) "clawdinator-repo-seed.service";
+        ++ lib.optional cfg.bootstrap.enable "botctl-bootstrap.service"
+        ++ lib.optional cfg.bootstrap.enable "botctl-agenix.service"
+        ++ lib.optional cfg.githubApp.enable "botctl-github-app-token.service"
+        ++ lib.optional (cfg.repoSeedSnapshotDir != null) "botctl-repo-seed.service";
       wants =
-        lib.optional cfg.bootstrap.enable "clawdinator-bootstrap.service"
-        ++ lib.optional cfg.bootstrap.enable "clawdinator-agenix.service"
-        ++ lib.optional cfg.githubApp.enable "clawdinator-github-app-token.service"
-        ++ lib.optional (cfg.repoSeedSnapshotDir != null) "clawdinator-repo-seed.service";
+        lib.optional cfg.bootstrap.enable "botctl-bootstrap.service"
+        ++ lib.optional cfg.bootstrap.enable "botctl-agenix.service"
+        ++ lib.optional cfg.githubApp.enable "botctl-github-app-token.service"
+        ++ lib.optional (cfg.repoSeedSnapshotDir != null) "botctl-repo-seed.service";
 
       environment = {
-        CLAWDBOT_CONFIG_PATH = configPath;
-        CLAWDBOT_STATE_DIR = cfg.stateDir;
-        CLAWDBOT_WORKSPACE_DIR = workspaceDir;
-        CLAWDBOT_LOG_DIR = logDir;
+        BOT_CONFIG_PATH = configPath;
+        BOT_STATE_DIR = cfg.stateDir;
+        BOT_WORKSPACE_DIR = workspaceDir;
+        BOT_LOG_DIR = logDir;
 
         # Backward-compatible env names used by some builds.
-        CLAWDIS_CONFIG_PATH = configPath;
-        CLAWDIS_STATE_DIR = cfg.stateDir;
+        BOTIS_CONFIG_PATH = configPath;
+        BOTIS_STATE_DIR = cfg.stateDir;
       };
 
       path = [ pkgs.coreutils pkgs.git pkgs.rsync ] ++ toolchain.packages;
@@ -607,8 +607,8 @@ in
           ];
         ExecStart =
           if tokenWrapper != null
-          then "${tokenWrapper}/bin/clawdinator-gateway"
-          else "${cfg.package}/bin/clawdbot gateway --port ${toString cfg.gatewayPort}";
+          then "${tokenWrapper}/bin/botctl-gateway"
+          else "${cfg.package}/bin/bot gateway --port ${toString cfg.gatewayPort}";
         Restart = "always";
         RestartSec = 2;
         StandardOutput = "append:${logDir}/gateway.log";
@@ -616,14 +616,14 @@ in
       };
     };
 
-    systemd.services.clawdinator-repo-seed = lib.mkIf (cfg.repoSeedSnapshotDir != null) {
-      description = "CLAWDINATOR repo seed (snapshot copy)";
+    systemd.services.botctl-repo-seed = lib.mkIf (cfg.repoSeedSnapshotDir != null) {
+      description = "BOTCTL repo seed (snapshot copy)";
       wantedBy = [ "multi-user.target" ];
-      before = [ "clawdinator.service" ];
+      before = [ "botctl.service" ];
       after =
         [ "local-fs.target" ]
-        ++ lib.optional cfg.bootstrap.enable "clawdinator-bootstrap.service";
-      requires = lib.optional cfg.bootstrap.enable "clawdinator-bootstrap.service";
+        ++ lib.optional cfg.bootstrap.enable "botctl-bootstrap.service";
+      requires = lib.optional cfg.bootstrap.enable "botctl-bootstrap.service";
       serviceConfig = {
         Type = "oneshot";
         User = "root";
@@ -632,8 +632,8 @@ in
       script = "${pkgs.bash}/bin/bash ${../../scripts/seed-repos-from-snapshot.sh} ${cfg.repoSeedSnapshotDir} ${repoSeedBaseDir} ${cfg.user} ${cfg.group}";
     };
 
-    systemd.services.clawdinator-bootstrap = lib.mkIf cfg.bootstrap.enable {
-      description = "CLAWDINATOR bootstrap (S3 secrets + repo seeds)";
+    systemd.services.botctl-bootstrap = lib.mkIf cfg.bootstrap.enable {
+      description = "BOTCTL bootstrap (S3 secrets + repo seeds)";
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
@@ -649,11 +649,11 @@ in
       script = "${pkgs.bash}/bin/bash ${../../scripts/bootstrap-runtime.sh} ${cfg.bootstrap.s3Bucket} ${cfg.bootstrap.s3Prefix} ${cfg.bootstrap.secretsDir} ${cfg.bootstrap.repoSeedsDir} ${cfg.bootstrap.ageKeyPath} ${cfg.bootstrap.secretsArchive} ${cfg.bootstrap.repoSeedsArchive}";
     };
 
-    systemd.services.clawdinator-agenix = lib.mkIf cfg.bootstrap.enable {
-      description = "CLAWDINATOR agenix (post-bootstrap activation)";
+    systemd.services.botctl-agenix = lib.mkIf cfg.bootstrap.enable {
+      description = "BOTCTL agenix (post-bootstrap activation)";
       wantedBy = [ "multi-user.target" ];
-      after = [ "clawdinator-bootstrap.service" ];
-      wants = [ "clawdinator-bootstrap.service" ];
+      after = [ "botctl-bootstrap.service" ];
+      wants = [ "botctl-bootstrap.service" ];
       unitConfig = {
         ConditionPathExists = "!/run/agenix";
       };
@@ -665,12 +665,12 @@ in
     };
 
     systemd.services.agenix = lib.mkIf cfg.bootstrap.enable {
-      requires = [ "clawdinator-bootstrap.service" ];
-      after = [ "clawdinator-bootstrap.service" ];
+      requires = [ "botctl-bootstrap.service" ];
+      after = [ "botctl-bootstrap.service" ];
     };
 
-    systemd.services.clawdinator-efs-stunnel = lib.mkIf cfg.memoryEfs.enable {
-      description = "CLAWDINATOR EFS TLS tunnel";
+    systemd.services.botctl-efs-stunnel = lib.mkIf cfg.memoryEfs.enable {
+      description = "BOTCTL EFS TLS tunnel";
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
@@ -680,8 +680,8 @@ in
       };
     };
 
-    systemd.services.clawdinator-memory-init = lib.mkIf cfg.memoryEfs.enable {
-      description = "CLAWDINATOR memory directory init";
+    systemd.services.botctl-memory-init = lib.mkIf cfg.memoryEfs.enable {
+      description = "BOTCTL memory directory init";
       wantedBy = [ "multi-user.target" ];
       after = [ "remote-fs.target" ];
       wants = [ "remote-fs.target" ];
@@ -691,8 +691,8 @@ in
       };
     };
 
-    systemd.services.clawdinator-self-update = lib.mkIf cfg.selfUpdate.enable {
-      description = "CLAWDINATOR self-update (flake update + rebuild)";
+    systemd.services.botctl-self-update = lib.mkIf cfg.selfUpdate.enable {
+      description = "BOTCTL self-update (flake update + rebuild)";
       serviceConfig = {
         Type = "oneshot";
         User = "root";
@@ -701,7 +701,7 @@ in
       script = "${updateScript}";
     };
 
-    systemd.timers.clawdinator-self-update = lib.mkIf cfg.selfUpdate.enable {
+    systemd.timers.botctl-self-update = lib.mkIf cfg.selfUpdate.enable {
       wantedBy = [ "timers.target" ];
       timerConfig = {
         OnCalendar = cfg.selfUpdate.schedule;
@@ -709,10 +709,10 @@ in
       };
     };
 
-    systemd.services.clawdinator-github-app-token = lib.mkIf cfg.githubApp.enable {
-      description = "CLAWDINATOR GitHub App token refresh";
+    systemd.services.botctl-github-app-token = lib.mkIf cfg.githubApp.enable {
+      description = "BOTCTL GitHub App token refresh";
       wantedBy = [ "multi-user.target" ];
-      before = [ "clawdinator.service" ];
+      before = [ "botctl.service" ];
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
       serviceConfig = {
@@ -723,7 +723,7 @@ in
       script = "${githubTokenScript}";
     };
 
-    systemd.timers.clawdinator-github-app-token = lib.mkIf cfg.githubApp.enable {
+    systemd.timers.botctl-github-app-token = lib.mkIf cfg.githubApp.enable {
       wantedBy = [ "timers.target" ];
       timerConfig = {
         OnCalendar = cfg.githubApp.schedule;
@@ -731,13 +731,13 @@ in
       };
     };
 
-    systemd.services.clawdinator-github-sync = lib.mkIf cfg.githubSync.enable {
-      description = "CLAWDINATOR GitHub org sync (PRs/issues to memory)";
+    systemd.services.botctl-github-sync = lib.mkIf cfg.githubSync.enable {
+      description = "BOTCTL GitHub org sync (PRs/issues to memory)";
       after =
         [ "network-online.target" ]
-        ++ lib.optional cfg.githubApp.enable "clawdinator-github-app-token.service"
+        ++ lib.optional cfg.githubApp.enable "botctl-github-app-token.service"
         ++ lib.optional cfg.memoryEfs.enable "remote-fs.target"
-        ++ lib.optional cfg.memoryEfs.enable "clawdinator-memory-init.service";
+        ++ lib.optional cfg.memoryEfs.enable "botctl-memory-init.service";
       wants =
         [ "network-online.target" ]
         ++ lib.optional cfg.memoryEfs.enable "remote-fs.target";
@@ -757,7 +757,7 @@ in
       '';
     };
 
-    systemd.timers.clawdinator-github-sync = lib.mkIf cfg.githubSync.enable {
+    systemd.timers.botctl-github-sync = lib.mkIf cfg.githubSync.enable {
       wantedBy = [ "timers.target" ];
       timerConfig = {
         OnCalendar = cfg.githubSync.schedule;

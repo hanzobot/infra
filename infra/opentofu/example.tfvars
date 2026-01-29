@@ -1,4 +1,4 @@
-name = "clawdinator-1"
+name = "botctl-1"
 server_type = "cpx22"
 location = "nbg1"
-ssh_key_name = "clawdinator-deploy"
+ssh_key_name = "botctl-deploy"

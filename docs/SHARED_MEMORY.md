@@ -1,10 +1,10 @@
 # Shared Memory (Hive Mind)
 
-All CLAWDINATORs share the same memory files. There is no per-instance prefix for shared memory.
+All BOTCTLs share the same memory files. There is no per-instance prefix for shared memory.
 
 POC recommendation:
-- Use a shared host volume mounted at /var/lib/clawd on 1–5 hosts.
-- Memory lives at /var/lib/clawd/memory.
+- Use a shared host volume mounted at /var/lib/bot on 1–5 hosts.
+- Memory lives at /var/lib/bot/memory.
 
 File patterns:
 - Daily notes can be per instance: YYYY-MM-DD_INSTANCE.md (merge later).
@@ -17,7 +17,7 @@ File patterns:
 
 Example layout:
 ```
-~/clawd/
+~/bot/
 ├── memory/
 │ ├── project.md
 │ ├── architecture.md

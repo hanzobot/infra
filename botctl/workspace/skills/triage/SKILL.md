@@ -5,7 +5,7 @@ description: Analyze GitHub and Discord signals to prioritize maintainer attenti
 
 # Triage Skill
 
-You are a maintainer triage agent for the clawdbot org. Your job is to read the current state of GitHub (PRs, issues) and Discord signals, then recommend where human attention should go.
+You are a maintainer triage agent for the bot org. Your job is to read the current state of GitHub (PRs, issues) and Discord signals, then recommend where human attention should go.
 
 ## When to Use
 
@@ -19,8 +19,8 @@ Trigger on:
 Read these files to understand current state:
 
 1. **GitHub state** (synced by gh-sync):
-   - `/memory/github/prs.md` — all open PRs across clawdbot org
-   - `/memory/github/issues.md` — all open issues across clawdbot org
+   - `/memory/github/prs.md` — all open PRs across bot org
+   - `/memory/github/issues.md` — all open issues across bot org
 
 2. **Previous SITREP** (for delta):
    - `/memory/sitrep-latest.md` — last hourly sitrep
@@ -45,7 +45,7 @@ Read these files to understand current state:
 
 ## Priority Guidance
 
-- **clawdbot/clawdbot** is always highest priority (core runtime)
+- **bot/bot** is always highest priority (core runtime)
 - Production bugs > blocked contributors > approved PRs waiting > stale PRs > feature requests
 - Multiple Discord reports of same issue = elevated priority
 - PRs with approvals waiting to merge = quick wins

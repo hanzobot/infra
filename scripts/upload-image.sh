@@ -18,7 +18,7 @@ region="${AWS_REGION:?AWS_REGION required}"
 timestamp="$(date -u +%Y%m%d%H%M%S)"
 ext="${image_path##*.}"
 ext="$(printf '%s' "${ext}" | tr '[:upper:]' '[:lower:]')"
-key="clawdinator-nixos-${timestamp}.${ext}"
+key="botctl-nixos-${timestamp}.${ext}"
 
 aws s3 cp "${image_path}" "s3://${bucket}/${key}" \
   --region "${region}" \

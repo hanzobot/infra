@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# gh-sync.sh — Pure IO sync of GitHub state for clawdbot org
+# gh-sync.sh — Pure IO sync of GitHub state for bot org
 # ZFC-compliant: no reasoning, no scoring, no heuristics
 # Writes raw data to memory/github/ for AI to reason about
 
@@ -7,7 +7,7 @@ set -euo pipefail
 
 MEMORY_DIR="${MEMORY_DIR:-/memory}"
 GITHUB_DIR="${MEMORY_DIR}/github"
-ORG="${ORG:-clawdbot}"
+ORG="${ORG:-bot}"
 
 mkdir -p "$GITHUB_DIR"
 
@@ -31,7 +31,7 @@ trap 'rm -f "$prs_tmp" "$issues_tmp"' EXIT
 
 # Header for PRs
 cat > "$prs_tmp" << 'EOF'
-# Open Pull Requests (clawdbot org)
+# Open Pull Requests (bot org)
 
 Last synced: SYNC_TIME
 
@@ -40,7 +40,7 @@ sed -i.bak "s/SYNC_TIME/$(date -u +%Y-%m-%dT%H:%M:%SZ)/" "$prs_tmp" && rm -f "${
 
 # Header for Issues
 cat > "$issues_tmp" << 'EOF'
-# Open Issues (clawdbot org)
+# Open Issues (bot org)
 
 Last synced: SYNC_TIME
 

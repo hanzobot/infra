@@ -24,18 +24,18 @@ output "secret_access_key" {
 }
 
 output "instance_id" {
-  value       = local.instance_enabled ? aws_instance.clawdinator[0].id : null
-  description = "CLAWDINATOR instance ID."
+  value       = local.instance_enabled ? aws_instance.botctl[0].id : null
+  description = "BOTCTL instance ID."
 }
 
 output "instance_public_ip" {
-  value       = local.instance_enabled ? aws_instance.clawdinator[0].public_ip : null
-  description = "CLAWDINATOR public IP."
+  value       = local.instance_enabled ? aws_instance.botctl[0].public_ip : null
+  description = "BOTCTL public IP."
 }
 
 output "instance_public_dns" {
-  value       = local.instance_enabled ? aws_instance.clawdinator[0].public_dns : null
-  description = "CLAWDINATOR public DNS."
+  value       = local.instance_enabled ? aws_instance.botctl[0].public_dns : null
+  description = "BOTCTL public DNS."
 }
 
 output "efs_file_system_id" {

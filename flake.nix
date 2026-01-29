@@ -1,25 +1,25 @@
 {
-  description = "CLAWDINATOR infra + Nix modules";
+  description = "BOTCTL infra + Nix modules";
 
   inputs = {
-    nix-clawdbot.url = "github:clawdbot/nix-clawdbot"; # latest upstream
-    nixpkgs.follows = "nix-clawdbot/nixpkgs";
+    nix-bot.url = "github:bot/nix-bot"; # latest upstream
+    nixpkgs.follows = "nix-bot/nixpkgs";
     agenix.url = "github:ryantm/agenix";
   };
 
-  outputs = { self, nixpkgs, nix-clawdbot, agenix }:
+  outputs = { self, nixpkgs, nix-bot, agenix }:
     let
       lib = nixpkgs.lib;
       systems = [ "x86_64-linux" "aarch64-linux" ];
       forAllSystems = f: lib.genAttrs systems (system: f system);
-      clawdbotOverlay = nix-clawdbot.overlays.default;
+      botOverlay = nix-bot.overlays.default;
     in
     {
-      nixosModules.clawdinator = import ./nix/modules/clawdinator.nix;
-      nixosModules.default = self.nixosModules.clawdinator;
+      nixosModules.botctl = import ./nix/modules/botctl.nix;
+      nixosModules.default = self.nixosModules.botctl;
 
-      overlays.clawdbot = clawdbotOverlay;
-      overlays.default = clawdbotOverlay;
+      overlays.bot = botOverlay;
+      overlays.default = botOverlay;
 
       packages = forAllSystems (system:
         let
@@ -28,34 +28,34 @@
             overlays = [ self.overlays.default ];
           };
           gateway =
-            if pkgs ? clawdbot-gateway
-            then pkgs.clawdbot-gateway
-            else pkgs.clawdbot;
+            if pkgs ? botd
+            then pkgs.botd
+            else pkgs.bot;
           systemPackages =
             if system == "x86_64-linux" then {
-              clawdinator-system = self.nixosConfigurations.clawdinator-1.config.system.build.toplevel;
-              clawdinator-image-system = self.nixosConfigurations.clawdinator-1-image.config.system.build.toplevel;
+              botctl-system = self.nixosConfigurations.botctl-1.config.system.build.toplevel;
+              botctl-image-system = self.nixosConfigurations.botctl-1-image.config.system.build.toplevel;
             } else {};
         in {
-          clawdbot-gateway = gateway;
+          botd = gateway;
           default = gateway;
         } // systemPackages);
 
-      nixosConfigurations.clawdinator-1 = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.botctl-1 = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
           ({ ... }: { nixpkgs.overlays = [ self.overlays.default ]; })
           agenix.nixosModules.default
-          ./nix/hosts/clawdinator-1.nix
+          ./nix/hosts/botctl-1.nix
         ];
       };
 
-      nixosConfigurations.clawdinator-1-image = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.botctl-1-image = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
           ({ ... }: { nixpkgs.overlays = [ self.overlays.default ]; })
           agenix.nixosModules.default
-          ./nix/hosts/clawdinator-1-image.nix
+          ./nix/hosts/botctl-1-image.nix
         ];
       };
     };

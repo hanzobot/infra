@@ -2,8 +2,8 @@
 set -euo pipefail
 
 root="${1:-/memory}"
-owner="${2:-clawdinator}"
-group="${3:-clawdinator}"
+owner="${2:-botctl}"
+group="${3:-botctl}"
 
 mkdir -p "$root/daily" "$root/discord"
 

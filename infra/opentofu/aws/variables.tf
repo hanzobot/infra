@@ -6,13 +6,13 @@ variable "aws_region" {
 variable "bucket_name" {
   description = "S3 bucket name for image uploads."
   type        = string
-  default     = "clawdinator-images-eu1-20260107165216"
+  default     = "botctl-images-eu1-20260107165216"
 }
 
 variable "ci_user_name" {
   description = "IAM user used by CI."
   type        = string
-  default     = "clawdinator-image-uploader"
+  default     = "botctl-image-uploader"
 }
 
 variable "tags" {
@@ -22,15 +22,15 @@ variable "tags" {
 }
 
 variable "ami_id" {
-  description = "AMI ID for CLAWDINATOR instances."
+  description = "AMI ID for BOTCTL instances."
   type        = string
   default     = ""
 }
 
 variable "instance_name" {
-  description = "Name tag for the CLAWDINATOR instance."
+  description = "Name tag for the BOTCTL instance."
   type        = string
-  default     = "clawdinator-1"
+  default     = "botctl-1"
 }
 
 variable "instance_type" {
@@ -46,7 +46,7 @@ variable "root_volume_size_gb" {
 }
 
 variable "ssh_public_key" {
-  description = "SSH public key for the CLAWDINATOR operator."
+  description = "SSH public key for the BOTCTL operator."
   type        = string
   default     = ""
   validation {

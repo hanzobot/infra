@@ -1,7 +1,7 @@
 { lib, config, ... }:
 let
-  secretsPath = config.clawdinator.secretsPath;
-  repoSeedsFile = ../../clawdinator/repos.tsv;
+  secretsPath = config.botctl.secretsPath;
+  repoSeedsFile = ../../botctl/repos.tsv;
   repoSeedLines =
     lib.filter
       (line: line != "" && !lib.hasPrefix "#" line)
@@ -20,49 +20,49 @@ let
   repoSeeds = map parseRepoSeed repoSeedLines;
 in
 {
-  options.clawdinator.secretsPath = lib.mkOption {
+  options.botctl.secretsPath = lib.mkOption {
     type = lib.types.str;
-    description = "Path to encrypted age secrets for CLAWDINATOR.";
+    description = "Path to encrypted age secrets for BOTCTL.";
   };
 
   config = {
-    clawdinator.secretsPath = "/var/lib/clawd/nix-secrets";
+    botctl.secretsPath = "/var/lib/bot/nix-secrets";
 
-    age.identityPaths = [ "/etc/agenix/keys/clawdinator.agekey" ];
-    age.secrets."clawdinator-github-app.pem" = {
-      file = "${secretsPath}/clawdinator-github-app.pem.age";
-      owner = "clawdinator";
-      group = "clawdinator";
+    age.identityPaths = [ "/etc/agenix/keys/botctl.agekey" ];
+    age.secrets."botctl-github-app.pem" = {
+      file = "${secretsPath}/botctl-github-app.pem.age";
+      owner = "botctl";
+      group = "botctl";
     };
-    age.secrets."clawdinator-anthropic-api-key" = {
-      file = "${secretsPath}/clawdinator-anthropic-api-key.age";
-      owner = "clawdinator";
-      group = "clawdinator";
+    age.secrets."botctl-anthropic-api-key" = {
+      file = "${secretsPath}/botctl-anthropic-api-key.age";
+      owner = "botctl";
+      group = "botctl";
     };
-    age.secrets."clawdinator-openai-api-key-peter-2" = {
-      file = "${secretsPath}/clawdinator-openai-api-key-peter-2.age";
-      owner = "clawdinator";
-      group = "clawdinator";
+    age.secrets."botctl-openai-api-key-peter-2" = {
+      file = "${secretsPath}/botctl-openai-api-key-peter-2.age";
+      owner = "botctl";
+      group = "botctl";
     };
-    age.secrets."clawdinator-discord-token" = {
-      file = "${secretsPath}/clawdinator-discord-token.age";
-      owner = "clawdinator";
-      group = "clawdinator";
+    age.secrets."botctl-discord-token" = {
+      file = "${secretsPath}/botctl-discord-token.age";
+      owner = "botctl";
+      group = "botctl";
     };
 
-    services.clawdinator = {
+    services.botctl = {
       enable = true;
-      instanceName = "CLAWDINATOR-1";
+      instanceName = "BOTCTL-1";
       memoryDir = "/memory";
-      repoSeedSnapshotDir = "/var/lib/clawd/repo-seeds";
+      repoSeedSnapshotDir = "/var/lib/bot/repo-seeds";
       bootstrap = {
         enable = true;
-        s3Bucket = "clawdinator-images-eu1-20260107165216";
-        s3Prefix = "bootstrap/clawdinator-1";
+        s3Bucket = "botctl-images-eu1-20260107165216";
+        s3Prefix = "bootstrap/botctl-1";
         region = "eu-central-1";
-        secretsDir = "/var/lib/clawd/nix-secrets";
-        repoSeedsDir = "/var/lib/clawd/repo-seeds";
-        ageKeyPath = "/etc/agenix/keys/clawdinator.agekey";
+        secretsDir = "/var/lib/bot/nix-secrets";
+        repoSeedsDir = "/var/lib/bot/repo-seeds";
+        ageKeyPath = "/etc/agenix/keys/botctl.agekey";
       };
       memoryEfs = {
         enable = true;
@@ -75,7 +75,7 @@ in
       config = {
         gateway.mode = "local";
         agents.defaults = {
-          workspace = "/var/lib/clawd/workspace";
+          workspace = "/var/lib/bot/workspace";
           maxConcurrent = 4;
           skipBootstrap = true;
           models = {
@@ -91,12 +91,12 @@ in
           {
             id = "main";
             default = true;
-            identity.name = "CLAWDINATOR-1";
+            identity.name = "BOTCTL-1";
           }
         ];
         logging = {
           level = "info";
-          file = "/var/lib/clawd/logs/clawdbot.log";
+          file = "/var/lib/bot/logs/bot.log";
         };
         session.sendPolicy = {
           default = "allow";
@@ -120,10 +120,10 @@ in
             webchat = "queue";
           };
         };
-        skills.allowBundled = [ "github" "clawdhub" ];
+        skills.allowBundled = [ "github" "bothub" ];
         cron = {
           enabled = true;
-          store = "/var/lib/clawd/cron-jobs.json";
+          store = "/var/lib/bot/cron-jobs.json";
         };
         discord = {
           enabled = true;
@@ -132,18 +132,18 @@ in
             "1456350064065904867" = {
               requireMention = false;
               channels = {
-                # #clawdinators-test
+                # #botctls-test
                 "1458426982579830908" = {
                   allow = true;
                   requireMention = false;
                   autoReply = true;
                 };
-                # #clawdributors-test (lurk only; replies denied via sendPolicy)
+                # #botributors-test (lurk only; replies denied via sendPolicy)
                 "1458138963067011176" = {
                   allow = true;
                   requireMention = false;
                 };
-                # #clawdributors (lurk only; replies denied via sendPolicy)
+                # #botributors (lurk only; replies denied via sendPolicy)
                 "1458141495701012561" = {
                   allow = true;
                   requireMention = false;
@@ -154,25 +154,25 @@ in
         };
       };
 
-      anthropicApiKeyFile = "/run/agenix/clawdinator-anthropic-api-key";
-      openaiApiKeyFile = "/run/agenix/clawdinator-openai-api-key-peter-2";
-      discordTokenFile = "/run/agenix/clawdinator-discord-token";
+      anthropicApiKeyFile = "/run/agenix/botctl-anthropic-api-key";
+      openaiApiKeyFile = "/run/agenix/botctl-openai-api-key-peter-2";
+      discordTokenFile = "/run/agenix/botctl-discord-token";
 
       githubApp = {
         enable = true;
         appId = "2607181";
         installationId = "102951645";
-        privateKeyFile = "/run/agenix/clawdinator-github-app.pem";
+        privateKeyFile = "/run/agenix/botctl-github-app.pem";
         schedule = "hourly";
       };
 
       selfUpdate.enable = true;
-      selfUpdate.flakePath = "/var/lib/clawd/repo";
-      selfUpdate.flakeHost = "clawdinator-1";
+      selfUpdate.flakePath = "/var/lib/bot/repo";
+      selfUpdate.flakeHost = "botctl-1";
 
       githubSync.enable = true;
 
-      cronJobsFile = ../../clawdinator/cron-jobs.json;
+      cronJobsFile = ../../botctl/cron-jobs.json;
     };
   };
 }

@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 locals {
-  tags = merge(var.tags, { "app" = "clawdinator" })
+  tags = merge(var.tags, { "app" = "botctl" })
   instance_enabled = var.ami_id != ""
 }
 
@@ -82,7 +82,7 @@ data "aws_iam_policy_document" "vmimport" {
 }
 
 resource "aws_iam_role_policy" "vmimport" {
-  name   = "clawdinator-vmimport"
+  name   = "botctl-vmimport"
   role   = aws_iam_role.vmimport.id
   policy = data.aws_iam_policy_document.vmimport.json
 }
@@ -141,7 +141,7 @@ data "aws_iam_policy_document" "ami_importer" {
 }
 
 resource "aws_iam_user_policy" "ami_importer" {
-  name   = "clawdinator-ami-importer"
+  name   = "botctl-ami-importer"
   user   = aws_iam_user.ci_user.name
   policy = data.aws_iam_policy_document.ami_importer.json
 }
@@ -157,7 +157,7 @@ data "aws_iam_policy_document" "instance_assume" {
 }
 
 resource "aws_iam_role" "instance" {
-  name               = "clawdinator-instance"
+  name               = "botctl-instance"
   assume_role_policy = data.aws_iam_policy_document.instance_assume.json
   tags               = local.tags
 }
@@ -193,13 +193,13 @@ data "aws_iam_policy_document" "instance_bootstrap" {
 }
 
 resource "aws_iam_role_policy" "instance_bootstrap" {
-  name   = "clawdinator-bootstrap"
+  name   = "botctl-bootstrap"
   role   = aws_iam_role.instance.id
   policy = data.aws_iam_policy_document.instance_bootstrap.json
 }
 
 resource "aws_iam_instance_profile" "instance" {
-  name = "clawdinator-instance"
+  name = "botctl-instance"
   role = aws_iam_role.instance.name
   tags = local.tags
 }
@@ -217,22 +217,22 @@ data "aws_subnets" "default" {
 
 resource "aws_key_pair" "operator" {
   count      = local.instance_enabled ? 1 : 0
-  key_name   = "clawdinator-operator"
+  key_name   = "botctl-operator"
   public_key = var.ssh_public_key
   tags       = local.tags
 }
 
-resource "aws_security_group" "clawdinator" {
+resource "aws_security_group" "botctl" {
   count       = local.instance_enabled ? 1 : 0
-  name        = "clawdinator"
-  description = "CLAWDINATOR access"
+  name        = "botctl"
+  description = "BOTCTL access"
   vpc_id      = data.aws_vpc.default.id
   tags        = local.tags
 }
 
 resource "aws_security_group" "efs" {
-  name        = "clawdinator-efs"
-  description = "CLAWDINATOR EFS access"
+  name        = "botctl-efs"
+  description = "BOTCTL EFS access"
   vpc_id      = data.aws_vpc.default.id
   tags        = local.tags
 }
@@ -240,7 +240,7 @@ resource "aws_security_group" "efs" {
 resource "aws_security_group_rule" "ssh_ingress" {
   count             = local.instance_enabled ? 1 : 0
   type              = "ingress"
-  security_group_id = aws_security_group.clawdinator[0].id
+  security_group_id = aws_security_group.botctl[0].id
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
@@ -250,7 +250,7 @@ resource "aws_security_group_rule" "ssh_ingress" {
 resource "aws_security_group_rule" "gateway_ingress" {
   count             = local.instance_enabled ? 1 : 0
   type              = "ingress"
-  security_group_id = aws_security_group.clawdinator[0].id
+  security_group_id = aws_security_group.botctl[0].id
   from_port         = 18789
   to_port           = 18789
   protocol          = "tcp"
@@ -260,7 +260,7 @@ resource "aws_security_group_rule" "gateway_ingress" {
 resource "aws_security_group_rule" "egress" {
   count             = local.instance_enabled ? 1 : 0
   type              = "egress"
-  security_group_id = aws_security_group.clawdinator[0].id
+  security_group_id = aws_security_group.botctl[0].id
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
@@ -274,7 +274,7 @@ resource "aws_security_group_rule" "efs_ingress_nfs" {
   from_port                = 2049
   to_port                  = 2049
   protocol                 = "tcp"
-  source_security_group_id = aws_security_group.clawdinator[0].id
+  source_security_group_id = aws_security_group.botctl[0].id
 }
 
 resource "aws_security_group_rule" "efs_egress" {
@@ -300,12 +300,12 @@ resource "aws_efs_mount_target" "memory" {
   ]
 }
 
-resource "aws_instance" "clawdinator" {
+resource "aws_instance" "botctl" {
   count                       = local.instance_enabled ? 1 : 0
   ami                         = var.ami_id
   instance_type               = var.instance_type
   subnet_id                   = element(data.aws_subnets.default.ids, 0)
-  vpc_security_group_ids      = [aws_security_group.clawdinator[0].id]
+  vpc_security_group_ids      = [aws_security_group.botctl[0].id]
   key_name                    = aws_key_pair.operator[0].key_name
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.instance.name

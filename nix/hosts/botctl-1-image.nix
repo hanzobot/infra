@@ -2,11 +2,11 @@
   imports = [
     (modulesPath + "/virtualisation/ec2-data.nix")
     (modulesPath + "/virtualisation/amazon-init.nix")
-    ../modules/clawdinator.nix
-    ./clawdinator-1-common.nix
+    ../modules/botctl.nix
+    ./botctl-1-common.nix
   ];
 
-  networking.hostName = "clawdinator-1";
+  networking.hostName = "botctl-1";
   time.timeZone = "UTC";
   system.stateVersion = "26.05";
 

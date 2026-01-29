@@ -1,29 +1,29 @@
 # Nix/NixOS
 
-This directory holds Nix modules/flakes to configure CLAWDINATOR hosts.
+This directory holds Nix modules/flakes to configure BOTCTL hosts.
 
 References (local repos on the same machine):
 - `../nix/ai-stack`
 - `../nix/nixos-config`
-- `../nix/nix-clawdbot`
+- `../nix/nix-bot`
 
 Responsibilities:
-- Install and configure clawdbot runtime
+- Install and configure bot runtime
 - Set up systemd services
-- Mount /var/lib/clawd (shared memory)
+- Mount /var/lib/bot (shared memory)
 - Inject secrets (Discord token, Anthropic key, GitHub token)
 
 Module:
-- `nix/modules/clawdinator.nix` provides `services.clawdinator`
-- Example host config: `nix/examples/clawdinator-host.nix`
+- `nix/modules/botctl.nix` provides `services.botctl`
+- Example host config: `nix/examples/botctl-host.nix`
 - Example flake wiring: `nix/examples/flake.nix`
 
 Hosts:
-- `nix/hosts/clawdinator-1.nix` is the first host config (templated; no machine-specific secrets)
+- `nix/hosts/botctl-1.nix` is the first host config (templated; no machine-specific secrets)
 
 Secrets:
 - Explicit token files only: `discordTokenFile`, `anthropicApiKeyFile`, and either `githubPatFile` or `githubApp.*`.
 
 Updates:
-- Tracks `github:clawdbot/nix-clawdbot` (latest upstream)
-- Self-update timer available via `services.clawdinator.selfUpdate.*`
+- Tracks `github:bot/nix-bot` (latest upstream)
+- Self-update timer available via `services.botctl.selfUpdate.*`

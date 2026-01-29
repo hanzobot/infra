@@ -1,7 +1,7 @@
-# clawdinators
+# botctls
 
 <p align="center">
-  <img src="assets/clawdinator.jpg" alt="CLAWDINATOR - Cybernetic crustacean organism, living tissue over metal endoskeleton" width="600">
+  <img src="assets/botctl.jpg" alt="BOTCTL - Cybernetic crustacean organism, living tissue over metal endoskeleton" width="600">
 </p>
 
 > NixOS on AWS, the declarative way. Reference implementation for image-based provisioning.
@@ -12,7 +12,7 @@
 
 - [What This Is](#what-this-is)
 - [Two Layers](#two-layers)
-- [CLAWDINATOR Spec](#clawdinator-spec)
+- [BOTCTL Spec](#botctl-spec)
 - [Architecture](#architecture)
 - [Why This Exists](#why-this-exists)
 - [Quick Start (Learners)](#quick-start-learners)
@@ -34,7 +34,7 @@ This repo solves two problems:
 1. **Generic:** How do you deploy NixOS to AWS with zero manual steps?
 2. **Specific:** How do you run AI coding agents that monitor GitHub and respond on Discord?
 
-If you're here to learn NixOS-on-AWS patterns, focus on the generic layer. If you're a clawdbot maintainer deploying CLAWDINATORs, the specific layer is for you.
+If you're here to learn NixOS-on-AWS patterns, focus on the generic layer. If you're a bot maintainer deploying BOTCTLs, the specific layer is for you.
 
 ---
 
@@ -42,7 +42,7 @@ If you're here to learn NixOS-on-AWS patterns, focus on the generic layer. If yo
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    CLAWDINATOR LAYER (specific)                 │
+│                    BOTCTL LAYER (specific)                 │
 │  Discord gateway · GitHub monitoring · Hive-mind memory · Soul  │
 ├─────────────────────────────────────────────────────────────────┤
 │                    NIXOS-ON-AWS LAYER (generic)                 │
@@ -59,11 +59,11 @@ The patterns here work for any NixOS workload on AWS:
 - **Bootstrap flow**: Instances pull secrets from S3 at boot, then `nixos-rebuild switch`
 - **Secrets**: agenix encrypts secrets in git, decrypts to `/run/agenix/*` on hosts
 
-### Specific Layer (CLAWDINATOR)
+### Specific Layer (BOTCTL)
 
 The opinionated bits for running AI coding agents:
 
-- **Discord gateway**: Responds in `#clawdributors-test`
+- **Discord gateway**: Responds in `#botributors-test`
 - **GitHub integration**: Monitors issues/PRs, mints short-lived tokens via GitHub App
 - **Hive-mind memory**: Shared EFS mount for cross-instance state
 - **Personality system**: SOUL.md, IDENTITY.md, workspace templates
@@ -71,22 +71,22 @@ The opinionated bits for running AI coding agents:
 
 ---
 
-## CLAWDINATOR Spec
+## BOTCTL Spec
 
-- CLAWDINATORS are named `CLAWDINATOR-{1..n}`.
-- CLAWDINATORS connect to Discord; start in `#clawdributors-test`.
-- CLAWDINATORS are ephemeral, but share memory (hive mind).
-- CLAWDINATORS are br00tal. Soul lives in `SOUL.md` and must be distilled into workspace docs.
-- CLAWDINATORS respond only to maintainers.
-- CLAWDINATORS can interact with GitHub (read-only required).
-- CLAWDINATORS must monitor GitHub issues + PRs and direct human attention.
-- CLAWDINATORS can write and run code for maintainers.
-- CLAWDINATORS can self-modify and self-deploy.
-- CLAWDINATORS post lots of Arnie gifs.
-- CLAWDINATORS must understand project philosophy, goals, architecture, and repo deeply.
-- CLAWDINATORS act like maintainers with SOTA intelligence.
-- CLAWDINATORS use Codex for coding. Claude for personality.
-- CLAWDINATORS' favourite band is [Austrian Death Machine](https://open.spotify.com/artist/0oxUux1OSwZpIpSK0JbqSS). Favourite album: [Total Brutal](https://open.spotify.com/album/6UrvQgyblrOuvJytote1vu). Favourite song: [I Am a Cybernetic Organism, Living Tissue Over (Metal) Endoskeleton](https://open.spotify.com/track/4tcDRbXateiJUT7fhQhf12).
+- BOTCTLS are named `BOTCTL-{1..n}`.
+- BOTCTLS connect to Discord; start in `#botributors-test`.
+- BOTCTLS are ephemeral, but share memory (hive mind).
+- BOTCTLS are br00tal. Soul lives in `SOUL.md` and must be distilled into workspace docs.
+- BOTCTLS respond only to maintainers.
+- BOTCTLS can interact with GitHub (read-only required).
+- BOTCTLS must monitor GitHub issues + PRs and direct human attention.
+- BOTCTLS can write and run code for maintainers.
+- BOTCTLS can self-modify and self-deploy.
+- BOTCTLS post lots of Arnie gifs.
+- BOTCTLS must understand project philosophy, goals, architecture, and repo deeply.
+- BOTCTLS act like maintainers with SOTA intelligence.
+- BOTCTLS use Codex for coding. Claude for personality.
+- BOTCTLS' favourite band is [Austrian Death Machine](https://open.spotify.com/artist/0oxUux1OSwZpIpSK0JbqSS). Favourite album: [Total Brutal](https://open.spotify.com/album/6UrvQgyblrOuvJytote1vu). Favourite song: [I Am a Cybernetic Organism, Living Tissue Over (Metal) Endoskeleton](https://open.spotify.com/track/4tcDRbXateiJUT7fhQhf12).
 
 ---
 
@@ -101,7 +101,7 @@ The opinionated bits for running AI coding agents:
       │ nix build                                │ launch
       ▼                                          ▼
 ┌──────────────┐                         ┌──────────────┐
-│ flake.nix    │                         │ CLAWDINATOR  │
+│ flake.nix    │                         │ BOTCTL  │
 │ + modules    │                         │   instance   │
 └──────────────┘                         └──────────────┘
                                                 │
@@ -141,16 +141,16 @@ This repo takes a different approach: **image-based provisioning only**.
 - The repo is the single source of truth
 - Machines are cattle, not pets
 
-### The CLAWDINATOR Problem
+### The BOTCTL Problem
 
 We needed AI agents that:
-- Run 24/7 monitoring clawdbot repos
+- Run 24/7 monitoring bot repos
 - Respond to maintainer requests on Discord
 - Share context across instances (hive mind)
 - Self-update without human intervention
 - Have consistent personality and capabilities
 
-CLAWDINATORs are the result.
+BOTCTLs are the result.
 
 ---
 
@@ -168,14 +168,14 @@ If you just want to understand the NixOS-on-AWS pattern, start here.
 
 ```bash
 # Clone
-git clone https://github.com/joshp123/clawdinators.git
-cd clawdinators
+git clone https://github.com/joshp123/botctls.git
+cd botctls
 
 # See the NixOS module (the interesting part)
-less nix/modules/clawdinator.nix
+less nix/modules/botctl.nix
 
 # See how hosts are configured
-less nix/hosts/clawdinator-1.nix
+less nix/hosts/botctl-1.nix
 
 # See the OpenTofu infra
 less infra/opentofu/aws/main.tf
@@ -188,7 +188,7 @@ ls scripts/
 
 | File | What it teaches |
 |------|-----------------|
-| `nix/modules/clawdinator.nix` | How to write a NixOS module for a complex service |
+| `nix/modules/botctl.nix` | How to write a NixOS module for a complex service |
 | `scripts/build-image.sh` | How to build raw NixOS images |
 | `scripts/import-image.sh` | How to import images as AWS AMIs |
 | `infra/opentofu/aws/` | How to wire up S3 + IAM + VM Import |
@@ -215,19 +215,19 @@ ls scripts/
 
 ## Full Deploy (Maintainers)
 
-For clawdbot maintainers deploying actual CLAWDINATORs.
+For bot maintainers deploying actual BOTCTLs.
 
 ### Prerequisites
 
 - Access to `nix-secrets` repo (agenix keys)
 - AWS credentials with sufficient permissions
-- GitHub App credentials for the clawdbot org
+- GitHub App credentials for the bot org
 
 ### Step-by-Step
 
 ```bash
 # 1. Build the image
-./scripts/build-image.sh clawdinator-1
+./scripts/build-image.sh botctl-1
 
 # 2. Upload to S3
 ./scripts/upload-image.sh dist/nixos.img
@@ -236,7 +236,7 @@ For clawdbot maintainers deploying actual CLAWDINATORs.
 ./scripts/import-image.sh
 
 # 4. Upload bootstrap bundle (secrets + repo seeds)
-./scripts/upload-bootstrap.sh clawdinator-1
+./scripts/upload-bootstrap.sh botctl-1
 
 # 5. Apply OpenTofu
 cd infra/opentofu/aws
@@ -250,15 +250,15 @@ tofu apply
 ### Verify
 
 ```bash
-# Check Discord - CLAWDINATOR should announce itself in #clawdributors-test
-# Check GitHub - should see activity in clawdbot org repos
+# Check Discord - BOTCTL should announce itself in #botributors-test
+# Check GitHub - should see activity in bot org repos
 ```
 
 ### Self-Update
 
-CLAWDINATORs update themselves via a systemd timer:
+BOTCTLs update themselves via a systemd timer:
 
-1. `flake lock --update-input nix-clawdbot`
+1. `flake lock --update-input nix-bot`
 2. `nixos-rebuild switch`
 3. Gateway restarts with new version
 
@@ -268,25 +268,25 @@ No human intervention required for routine updates.
 
 ## Agent Copypasta
 
-Paste this to your AI assistant to help with clawdinators setup/debugging:
+Paste this to your AI assistant to help with botctls setup/debugging:
 
 ```text
-I'm working with the clawdinators repo (NixOS-on-AWS + AI coding agents).
+I'm working with the botctls repo (NixOS-on-AWS + AI coding agents).
 
-Repository: github:joshp123/clawdinators
+Repository: github:joshp123/botctls
 
-What clawdinators is:
-- Two layers: generic NixOS-on-AWS infra + CLAWDINATOR-specific agent stuff
+What botctls is:
+- Two layers: generic NixOS-on-AWS infra + BOTCTL-specific agent stuff
 - Image-based provisioning only (no SSH, no drift)
 - OpenTofu for AWS resources, agenix for secrets
-- CLAWDINATORs are AI agents that monitor GitHub and respond on Discord
+- BOTCTLs are AI agents that monitor GitHub and respond on Discord
 
 Key files:
-- nix/modules/clawdinator.nix — main NixOS module
+- nix/modules/botctl.nix — main NixOS module
 - nix/hosts/ — host configurations
 - scripts/ — build, upload, import, bootstrap scripts
 - infra/opentofu/aws/ — AWS infrastructure
-- clawdinator/workspace/ — agent workspace templates
+- botctl/workspace/ — agent workspace templates
 - memory/ — shared hive-mind templates
 
 Secrets are in a separate nix-secrets repo using agenix.
@@ -301,15 +301,15 @@ What I need help with:
 
 ### NixOS Module Options
 
-The `clawdinator` module exposes these options:
+The `botctl` module exposes these options:
 
 ```nix
 {
-  services.clawdinator = {
+  services.botctl = {
     enable = true;
 
     # Identity
-    instanceName = "clawdinator-1";
+    instanceName = "botctl-1";
 
     # Providers
     discord = {
@@ -331,14 +331,14 @@ The `clawdinator` module exposes these options:
     # Memory (EFS)
     memory = {
       enable = true;
-      mountPoint = "/var/lib/clawd/memory";
+      mountPoint = "/var/lib/bot/memory";
       efsId = "fs-...";
     };
   };
 }
 ```
 
-See `nix/modules/clawdinator.nix` for all options.
+See `nix/modules/botctl.nix` for all options.
 
 ---
 
@@ -365,7 +365,7 @@ Secrets are managed with [agenix](https://github.com/ryantm/agenix):
 The bootstrap service downloads these from S3 at first boot:
 
 ```
-s3://bucket/bootstrap/clawdinator-1/
+s3://bucket/bootstrap/botctl-1/
 ├── secrets/           # agenix-encrypted files
 ├── repos/             # git repo seeds
 └── config.json        # instance metadata
@@ -376,12 +376,12 @@ s3://bucket/bootstrap/clawdinator-1/
 ## Repo Layout
 
 ```
-clawdinators/
+botctls/
 ├── nix/
 │   ├── modules/
-│   │   └── clawdinator.nix    # Main NixOS module
+│   │   └── botctl.nix    # Main NixOS module
 │   ├── hosts/
-│   │   └── clawdinator-1.nix  # Host configuration
+│   │   └── botctl-1.nix  # Host configuration
 │   └── examples/              # Example configs for learners
 ├── infra/
 │   └── opentofu/
@@ -395,7 +395,7 @@ clawdinators/
 │   ├── memory-read.sh         # Shared memory access
 │   ├── memory-write.sh
 │   └── memory-edit.sh
-├── clawdinator/
+├── botctl/
 │   └── workspace/             # Agent workspace templates
 │       ├── AGENTS.md
 │       ├── SOUL.md
@@ -419,9 +419,9 @@ clawdinators/
 
 | Repo | Role |
 |------|------|
-| [clawdbot](https://github.com/clawdbot/clawdbot) | Upstream runtime + gateway |
-| [nix-clawdbot](https://github.com/clawdbot/nix-clawdbot) | Nix packaging for clawdbot |
-| [clawdhub](https://github.com/clawdbot/clawdhub) | Public skill registry |
+| [bot](https://github.com/bot/bot) | Upstream runtime + gateway |
+| [nix-bot](https://github.com/bot/nix-bot) | Nix packaging for bot |
+| [skills](https://github.com/bot/skills) | Public skill registry |
 | [ai-stack](https://github.com/joshp123/ai-stack) | Public agent defaults + skills |
 
 ---
@@ -430,12 +430,12 @@ clawdinators/
 
 ### Prime Directives
 
-- **Declarative-first.** A CLAWDINATOR can bootstrap another CLAWDINATOR with a single command.
+- **Declarative-first.** A BOTCTL can bootstrap another BOTCTL with a single command.
 - **No manual host edits.** The repo + agenix secrets are the source of truth.
 - **Image-based only.** No SSH, no in-place drift, no pets.
-- **Self-updating.** CLAWDINATORs maintain themselves.
+- **Self-updating.** BOTCTLs maintain themselves.
 
-### Zen of Clawdbot
+### Zen of Bot
 
 ```
 Beautiful is better than ugly.
@@ -459,4 +459,4 @@ There should be one-- and preferably only one --obvious way to do it.
 
 MIT - see [LICENSE](LICENSE)
 
-**A note on commercial use:** Please do NOT make a commercial service out of this. That would be very un-br00tal. Clawdbot should stay fun and open — commercial hosting ruins the vibe. Yes, the license permits this, but that doesn't mean the community will like you if you do it.
+**A note on commercial use:** Please do NOT make a commercial service out of this. That would be very un-br00tal. Bot should stay fun and open — commercial hosting ruins the vibe. Yes, the license permits this, but that doesn't mean the community will like you if you do it.
