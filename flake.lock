@@ -129,11 +129,11 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "lastModified": 1770158244,
-        "narHash": "sha256-e/EKfXG6DLk5TJmsUKC184XO8pwtZ/S38Gtd1FkMe4g=",
+        "lastModified": 1770159965,
+        "narHash": "sha256-X7sNYo+YLZ574zdr5pBv+Fnz+OSCXaD+gFSGyamgfDA=",
         "owner": "moltbot",
         "repo": "nix-steipete-tools",
-        "rev": "5797244610beabb827ed4585903659373116f7c5",
+        "rev": "c4a860132460eea4367057055dbfea175bcb11c4",
         "type": "github"
       },
       "original": {
